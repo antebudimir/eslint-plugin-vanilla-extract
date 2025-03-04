@@ -224,7 +224,7 @@ The roadmap outlines the project's current status and future plans:
 
 ### Current Work
 
-- Compatibility testing to determine if the plugin works with ESLint v8. **Note**: There are no plans to ensure compatibility if issues arise. Upcoming features will be prioritized.
+- Compatibility testing to determine if the plugin works with ESLint v8. **Note**: There are no immediate plans to ensure compatibility if issues arise. Upcoming features will be prioritized.
 
 ### Upcoming Features
 
