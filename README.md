@@ -1,6 +1,8 @@
 # @antebudimir/eslint-plugin-vanilla-extract
 
-An ESLint plugin for enforcing CSS ordering in vanilla-extract css styles. Available presets are for alphabetical and
+[![npm version](https://img.shields.io/npm/v/@antebudimir/eslint-plugin-vanilla-extract.svg)](https://www.npmjs.com/package/@antebudimir/eslint-plugin-vanilla-extract)
+
+An ESLint plugin for enforcing CSS ordering in [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) css styles. Available presets are for alphabetical and
 [concentric](https://rhodesmill.org/brandon/2011/concentric-css/) CSS ordering. The plugin also supports a custom group ordering option based on groups available in concentric CSS.
 
 ## Features
