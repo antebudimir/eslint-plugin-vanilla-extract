@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    // Target and Module Settings
+    "target": "es2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    // Output Settings
+    "declaration": true,
+    "outDir": "./dist",
+
+    // Type Checking Options
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "useUnknownInCatchVariables": true,
+
+    // Interop Options
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    // Other Options
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": ["src/**/*", "*.d.ts"],
+  "exclude": ["node_modules", "**/*.test.ts", "dist"],
+  "typeRoots": ["./node_modules/@types", "./"]
+}
