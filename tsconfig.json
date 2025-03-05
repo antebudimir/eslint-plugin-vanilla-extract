@@ -27,6 +27,6 @@
     "verbatimModuleSyntax": true
   },
   "include": ["src/**/*", "*.d.ts"],
-  "exclude": ["node_modules", "**/*.test.ts", "dist"],
+  "exclude": ["node_modules", "dist"],
   "typeRoots": ["./node_modules/@types", "./"]
 }
