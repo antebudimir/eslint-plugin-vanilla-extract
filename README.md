@@ -17,7 +17,6 @@ An ESLint plugin for enforcing CSS ordering in [vanilla-extract](https://github.
 - Handles complex cases like nested objects, arrays of styles, and pseudo selectors
 - Works with camelCase properties as used in vanilla-extract
 
-<!-- TODO: test with pre-react 18 edu-portal app to see if eslint v8 is supported -->
 ## Requirements
 
 - ESLint 9.0.0 or higher
