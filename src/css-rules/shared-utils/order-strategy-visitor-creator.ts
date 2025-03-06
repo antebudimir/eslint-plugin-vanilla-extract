@@ -59,15 +59,22 @@ export const createNodeVisitors = (
       }
 
       // Handle style-related functions
-      if (['style', 'styleVariants', 'createVar', 'createTheme', 'createThemeContract'].includes(node.callee.name)) {
+      if (
+        ['createThemeContract', 'createVar', 'createTheme', 'keyframes', 'style', 'styleVariants'].includes(
+          node.callee.name,
+        )
+      ) {
         if (node.arguments.length > 0) {
           const styleArg = node.arguments[0];
           processStyleNode(ruleContext, styleArg as TSESTree.Node, processProperty);
         }
       }
 
-      // Handle globalStyle function
-      if (node.callee.name === 'globalStyle' && node.arguments.length >= 2) {
+      // Handle global functions
+      if (
+        (node.callee.name === 'globalKeyframes' || node.callee.name === 'globalStyle') &&
+        node.arguments.length >= 2
+      ) {
         const styleArg = node.arguments[1];
         processStyleNode(ruleContext, styleArg as TSESTree.Node, processProperty);
       }

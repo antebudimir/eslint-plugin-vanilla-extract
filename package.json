@@ -1,6 +1,6 @@
 {
   "name": "@antebudimir/eslint-plugin-vanilla-extract",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "ESLint plugin for enforcing CSS ordering in vanilla-extract styles",
   "author": "Ante Budimir",
   "license": "MIT",
@@ -37,7 +37,8 @@
   "files": [
     "dist",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "!dist/css-sample/"
   ],
   "scripts": {
     "build": "tsc",

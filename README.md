@@ -21,6 +21,7 @@ An ESLint plugin for enforcing CSS ordering in [vanilla-extract](https://github.
 
 - ESLint 9.0.0 or higher
 - Node.js 18.18.0 or higher
+- ESM (ECMAScript Modules) only
 
 ## Installation
 
@@ -36,6 +37,8 @@ pnpm add -D @antebudimir/eslint-plugin-vanilla-extract
 ```
 
 ## Usage
+
+**Note: This plugin is ESM-only.** It must be used with ESM configurations and can't be used with CommonJS `require()`.
 
 ### ESLint Flat Config (ESLint 9+)
 
@@ -225,12 +228,12 @@ The roadmap outlines the project's current status and future plans:
 
 ### Current Work
 
-- Compatibility testing to determine if the plugin works with ESLint v8. **Note**: There are no immediate plans to ensure compatibility if issues arise. Upcoming features will be prioritized.
+- Compatibility testing to determine if the plugin works with ESLint v8. **Note**: There are no plans to ensure compatibility if issues arise. Upcoming features will be prioritized.
 
 ### Upcoming Features
 
 - Begin work on test coverage.
-- Support for additional vanilla-extract APIs, including `fontFace`, `globalFontFace`, `globalKeyframes`, and `keyframes`.
+- Support for additional vanilla-extract APIs, including `fontFace`, `globalFontFace`.
 - Option to sort properties within user-defined concentric groups alphabetically instead of following the concentric order. **Note**: This feature will only be implemented if there's sufficient interest from the community.
 
 ## Contributing
