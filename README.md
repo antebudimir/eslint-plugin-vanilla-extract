@@ -2,8 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@antebudimir/eslint-plugin-vanilla-extract.svg)](https://www.npmjs.com/package/@antebudimir/eslint-plugin-vanilla-extract)
 
-An ESLint plugin for enforcing CSS ordering in [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) css styles. Available presets are for alphabetical and
-[concentric](https://rhodesmill.org/brandon/2011/concentric-css/) CSS ordering. The plugin also supports a custom group ordering option based on groups available in concentric CSS.
+An ESLint plugin for enforcing best practices in [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) CSS styles, including CSS property ordering and additional linting rules. Available presets are for alphabetical and [concentric](https://rhodesmill.org/brandon/2011/concentric-css/) CSS ordering. The plugin also supports a custom group ordering option based on groups available in [concentric CSS](src/css-rules/concentric-order/concentric-groups.ts).
 
 ## Features
 
@@ -16,6 +15,7 @@ An ESLint plugin for enforcing CSS ordering in [vanilla-extract](https://github.
 - Handles multiple vanilla-extract APIs (style, styleVariants, recipe, globalStyle, etc.)
 - Handles complex cases like nested objects, arrays of styles, and pseudo selectors
 - Works with camelCase properties as used in vanilla-extract
+- Additional linting rules for enhanced code quality (see roadmap for upcoming features)
 
 ## Requirements
 
@@ -182,7 +182,7 @@ export const myStyle = style({
 
 ## Concentric CSS Model
 
-Here's a list of all available groups from the provided concentricGroups array:
+Here's a list of all available groups from the provided [concentricGroups](src/css-rules/concentric-order/concentric-groups.ts) array:
 
 1. boxSizing
 2. position
@@ -228,12 +228,18 @@ The roadmap outlines the project's current status and future plans:
 
 ### Current Work
 
-- Compatibility testing to determine if the plugin works with ESLint v8. **Note**: There are no plans to ensure compatibility if issues arise. Upcoming features will be prioritized.
+- `fontFace` and `globalFontFace` linting support.
 
 ### Upcoming Features
 
-- Begin work on test coverage.
-- Support for additional vanilla-extract APIs, including `fontFace`, `globalFontFace`.
+- Test coverage.
+- `no-empty-blocks` rule to disallow empty blocks.
+- `no-unknown-units` rule to disallow unknown units.
+- `no-number-trailing-zeros` rule to disallow trailing zeros in numbers.
+- `no-zero-unit` rule to disallow units when the value is zero.
+- `np-px-unit` rule to disallow use of `px` units with configurable whitelist.
+- `prefer-logical-properties` rule to enforce use of logical properties.
+- `prefer-theme-tokens` rule to enforce use of theme tokens instead of hard-coded values when available.
 - Option to sort properties within user-defined concentric groups alphabetically instead of following the concentric order. **Note**: This feature will only be implemented if there's sufficient interest from the community.
 
 ## Contributing
