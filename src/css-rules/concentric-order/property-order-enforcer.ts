@@ -20,8 +20,8 @@ const reportOrderingIssue = (
     node: nextProperty.node as Rule.Node,
     messageId: 'incorrectOrder',
     data: {
-      next: nextProperty.name,
-      current: currentProperty.name,
+      nextProperty: nextProperty.name,
+      currentProperty: currentProperty.name,
     },
     fix: (fixer) =>
       generateFixesForCSSOrder(

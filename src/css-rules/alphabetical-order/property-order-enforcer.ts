@@ -1,22 +1,8 @@
 import type { Rule } from 'eslint';
 import { TSESTree } from '@typescript-eslint/utils';
+import { comparePropertiesAlphabetically } from '../shared-utils/alphabetical-property-comparator.js';
 import { generateFixesForCSSOrder } from '../shared-utils/css-order-fixer.js';
 import { getPropertyName } from '../shared-utils/property-separator.js';
-
-/**
- * Compares two CSS properties alphabetically.
- * @param firstProperty The first property to compare.
- * @param secondProperty The second property to compare.
- * @returns A number indicating the relative order of the properties (-1, 0, or 1).
- */
-const comparePropertiesAlphabetically = (
-  firstProperty: TSESTree.Property,
-  secondProperty: TSESTree.Property,
-): number => {
-  const firstName = getPropertyName(firstProperty);
-  const secondName = getPropertyName(secondProperty);
-  return firstName.localeCompare(secondName);
-};
 
 /**
  * Reports an ordering issue to ESLint and generates fixes.

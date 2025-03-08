@@ -6,6 +6,7 @@ import { enforceConcentricCSSOrderInRecipe } from '../concentric-order/recipe-or
 import { enforceConcentricCSSOrderInStyleObject } from '../concentric-order/style-object-processor.js';
 import { enforceUserDefinedGroupOrderInRecipe } from '../custom-order/recipe-order-enforcer.js';
 import { enforceUserDefinedGroupOrderInStyleObject } from '../custom-order/style-object-processor.js';
+import { enforceFontFaceOrder } from './font-face-property-order-enforcer.js';
 import { processStyleNode } from './style-node-processor.js';
 
 /**
@@ -58,6 +59,26 @@ export const createNodeVisitors = (
         return;
       }
 
+      const fontFaceFunctionArgumentIndexMap = {
+        fontFace: 0, // First argument (index 0)
+        globalFontFace: 1, // Second argument (index 1)
+      };
+
+      // Handle font face functions with special ordering
+      if (
+        node.callee.name in fontFaceFunctionArgumentIndexMap &&
+        node.arguments.length >
+          fontFaceFunctionArgumentIndexMap[node.callee.name as keyof typeof fontFaceFunctionArgumentIndexMap]
+      ) {
+        const argumentIndex =
+          fontFaceFunctionArgumentIndexMap[node.callee.name as keyof typeof fontFaceFunctionArgumentIndexMap];
+        const styleArguments = node.arguments[argumentIndex];
+
+        enforceFontFaceOrder(ruleContext, styleArguments as TSESTree.ObjectExpression);
+
+        return;
+      }
+
       // Handle style-related functions
       if (
         ['createThemeContract', 'createVar', 'createTheme', 'keyframes', 'style', 'styleVariants'].includes(
@@ -65,8 +86,8 @@ export const createNodeVisitors = (
         )
       ) {
         if (node.arguments.length > 0) {
-          const styleArg = node.arguments[0];
-          processStyleNode(ruleContext, styleArg as TSESTree.Node, processProperty);
+          const styleArguments = node.arguments[0];
+          processStyleNode(ruleContext, styleArguments as TSESTree.Node, processProperty);
         }
       }
 
@@ -75,8 +96,8 @@ export const createNodeVisitors = (
         (node.callee.name === 'globalKeyframes' || node.callee.name === 'globalStyle') &&
         node.arguments.length >= 2
       ) {
-        const styleArg = node.arguments[1];
-        processStyleNode(ruleContext, styleArg as TSESTree.Node, processProperty);
+        const styleArguments = node.arguments[1];
+        processStyleNode(ruleContext, styleArguments as TSESTree.Node, processProperty);
       }
 
       // Handle recipe function

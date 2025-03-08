@@ -180,6 +180,34 @@ export const myStyle = style({
 });
 ```
 
+## Font Face Declarations
+
+For `fontFace` and `globalFontFace` API calls, all three ordering rules (alphabetical, concentric, and custom) enforce the same special ordering:
+
+1. The `src` property always appears first
+2. All remaining properties are sorted alphabetically
+
+This special handling is applied because:
+
+- The `src` property is the most critical property in font face declarations
+- Consistent ordering improves readability for these specific APIs
+- Font-related properties are specialized and benefit from standardized ordering
+
+```typescript
+// ✅ Correct ordering for font faces
+export const theFont = fontFace({
+  src: ['url("/fonts/MyFont.woff2") format("woff2")', 'url("/fonts/MyFont.woff") format("woff")'],
+  ascentOverride: '90%',
+  descentOverride: '10%',
+  fontDisplay: 'swap',
+  fontFeatureSettings: '"liga" 1',
+  fontStretch: 'normal',
+  // ...other properties in alphabetical order
+});
+```
+
+Opinionated, but it is what it is. If someone has a suggestion for a better ordering, let me know!
+
 ## Concentric CSS Model
 
 Here's a list of all available groups from the provided [concentricGroups](src/css-rules/concentric-order/concentric-groups.ts) array:
@@ -224,22 +252,22 @@ The roadmap outlines the project's current status and future plans:
 
 - Initial release with support for alphabetical, concentric, and custom group CSS ordering.
 - Auto-fix capability integrated into ESLint.
-- Support for multiple vanilla-extract APIs (e.g., `style`, `styleVariants`, `recipe`, `globalStyle` etc.).
+- Support for multiple vanilla-extract APIs (e.g., `style`, `styleVariants`, `recipe`, `globalStyle`, `fontFace`, etc.).
 
 ### Current Work
 
-- `fontFace` and `globalFontFace` linting support.
+- Test coverage.
 
 ### Upcoming Features
 
-- Test coverage.
 - `no-empty-blocks` rule to disallow empty blocks.
 - `no-unknown-units` rule to disallow unknown units.
 - `no-number-trailing-zeros` rule to disallow trailing zeros in numbers.
 - `no-zero-unit` rule to disallow units when the value is zero.
-- `np-px-unit` rule to disallow use of `px` units with configurable whitelist.
+- `no-px-unit` rule to disallow use of `px` units with configurable whitelist.
 - `prefer-logical-properties` rule to enforce use of logical properties.
 - `prefer-theme-tokens` rule to enforce use of theme tokens instead of hard-coded values when available.
+- `no-global-style` rule to disallow use of `globalStyle` function.
 - Option to sort properties within user-defined concentric groups alphabetically instead of following the concentric order. **Note**: This feature will only be implemented if there's sufficient interest from the community.
 
 ## Contributing

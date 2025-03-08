@@ -12,7 +12,9 @@ const alphabeticalOrderRule: Rule.RuleModule = {
     fixable: 'code',
     schema: [],
     messages: {
-      alphabeticalOrder: "Property '{{next}}' should come before '{{current}}' in alphabetical order.",
+      alphabeticalOrder: "Property '{{nextProperty}}' should come before '{{currentProperty}}' in alphabetical order.",
+      fontFaceOrder:
+        "Properties in fontFace should be ordered with 'src' first, followed by other properties in alphabetical order. Property '{{nextProperty}}' should come before '{{currentProperty}}'.",
     },
   },
   create(context) {
