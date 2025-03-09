@@ -1,0 +1,32 @@
+name: Create Releases from Tags
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-releases:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Create Releases from Tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get all tags sorted by version
+          TAGS=$(git tag -l | sort -V)
+
+          for TAG in $TAGS; do
+            VERSION=${TAG#v}  # Remove 'v' prefix
+            
+            # Extract changelog entry for this version
+            BODY=$(sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '$d')
+            
+            # Create GitHub release
+            gh release create $TAG \
+              --title "Release $TAG" \
+              --notes "$BODY" \
+              --repo ${{ github.repository }}
+          done
