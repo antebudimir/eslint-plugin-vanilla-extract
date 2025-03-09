@@ -253,14 +253,14 @@ The roadmap outlines the project's current status and future plans:
 - Initial release with support for alphabetical, concentric, and custom group CSS ordering.
 - Auto-fix capability integrated into ESLint.
 - Support for multiple vanilla-extract APIs (e.g., `style`, `styleVariants`, `recipe`, `globalStyle`, `fontFace`, etc.).
+- Rules tested.
 
 ### Current Work
 
-- Test coverage.
+- `no-empty-blocks` rule to disallow empty blocks.
 
 ### Upcoming Features
 
-- `no-empty-blocks` rule to disallow empty blocks.
 - `no-unknown-units` rule to disallow unknown units.
 - `no-number-trailing-zeros` rule to disallow trailing zeros in numbers.
 - `no-zero-unit` rule to disallow units when the value is zero.

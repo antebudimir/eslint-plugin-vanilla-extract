@@ -18,9 +18,10 @@ import { processStyleNode } from './style-node-processor.js';
  * @returns An object with visitor functions for the ESLint rule.
  *
  * This function sets up visitors for the following cases:
- * 1. Style-related functions: 'style', 'styleVariants', 'createVar', 'createTheme', 'createThemeContract'
- * 2. The 'globalStyle' function
- * 3. The 'recipe' function
+ * 1. The fontFace and globalFontFace functions.
+ * 2. Style-related functions: 'keyframes', 'style', 'styleVariants'.
+ * 3. The 'globalStyle' and 'globalKeyframes' function
+ * 4. The 'recipe' function
  *
  * Each visitor applies the appropriate ordering strategy to the style objects in these function calls.
  */
@@ -80,11 +81,7 @@ export const createNodeVisitors = (
       }
 
       // Handle style-related functions
-      if (
-        ['createThemeContract', 'createVar', 'createTheme', 'keyframes', 'style', 'styleVariants'].includes(
-          node.callee.name,
-        )
-      ) {
+      if (['keyframes', 'style', 'styleVariants'].includes(node.callee.name)) {
         if (node.arguments.length > 0) {
           const styleArguments = node.arguments[0];
           processStyleNode(ruleContext, styleArguments as TSESTree.Node, processProperty);
