@@ -1,6 +1,6 @@
 # @antebudimir/eslint-plugin-vanilla-extract
 
-[![npm version](https://img.shields.io/npm/v/@antebudimir/eslint-plugin-vanilla-extract.svg)](https://www.npmjs.com/package/@antebudimir/eslint-plugin-vanilla-extract)
+[![npm version](https://img.shields.io/npm/v/@antebudimir/eslint-plugin-vanilla-extract.svg)](https://www.npmjs.com/package/@antebudimir/eslint-plugin-vanilla-extract)    [![CI](https://github.com/antebudimir/eslint-plugin-vanilla-extract/actions/workflows/ci.yml/badge.svg)](https://github.com/antebudimir/eslint-plugin-vanilla-extract/actions/workflows/ci.yml)    [![Coverage Status](https://coveralls.io/repos/github/antebudimir/eslint-plugin-vanilla-extract/badge.svg?branch=main)](https://coveralls.io/github/antebudimir/eslint-plugin-vanilla-extract?branch=main)
 
 An ESLint plugin for enforcing best practices in [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) CSS styles, including CSS property ordering and additional linting rules. Available presets are for alphabetical and [concentric](https://rhodesmill.org/brandon/2011/concentric-css/) CSS ordering. The plugin also supports a custom group ordering option based on groups available in [concentric CSS](src/css-rules/concentric-order/concentric-groups.ts).
 
