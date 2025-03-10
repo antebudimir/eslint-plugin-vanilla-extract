@@ -4,6 +4,10 @@
 
 An ESLint plugin for enforcing best practices in [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) CSS styles, including CSS property ordering and additional linting rules. Available presets are for alphabetical and [concentric](https://rhodesmill.org/brandon/2011/concentric-css/) CSS ordering. The plugin also supports a custom group ordering option based on groups available in [concentric CSS](src/css-rules/concentric-order/concentric-groups.ts).
 
+## Demo
+
+![Plugin Demo](https://github.com/user-attachments/assets/93ba118d-84df-4da0-ac68-fdb429e581d6)
+
 ## Features
 
 - Enforces CSS property ordering in vanilla-extract style objects with two available presets:
