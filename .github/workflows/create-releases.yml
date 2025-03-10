@@ -2,6 +2,9 @@ name: Create Releases from Tags
 
 on:
   workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   create-releases:
@@ -15,10 +18,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Get all tags sorted by version
-          TAGS=$(git tag -l | sort -V)
-
-          for TAG in $TAGS; do
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref_type }}" == "tag" ]]; then
+            # For tag push events, only create release for the pushed tag
+            TAG="${{ github.ref_name }}"
             VERSION=${TAG#v}  # Remove 'v' prefix
             
             # Extract changelog entry for this version
@@ -29,4 +31,35 @@ jobs:
               --title "Release $TAG" \
               --notes "$BODY" \
               --repo ${{ github.repository }}
-          done
+              
+            echo "✅ Successfully created release for $TAG"
+          else
+            # For manual workflow runs, check each tag
+            # Get all tags sorted by version
+            TAGS=$(git tag -l | sort -V)
+            
+            for TAG in $TAGS; do
+              VERSION=${TAG#v}  # Remove 'v' prefix
+              
+              # Check if release already exists
+              if ! gh release view $TAG --repo ${{ github.repository }} &>/dev/null; then
+                # Extract changelog entry for this version
+                BODY=$(sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '$d')
+                
+                # Create GitHub release
+                gh release create $TAG \
+                  --title "Release $TAG" \
+                  --notes "$BODY" \
+                  --repo ${{ github.repository }}
+                
+                echo "Created release for $TAG"
+              else
+                echo "Release for $TAG already exists, skipping"
+              fi
+            done
+            
+            echo "🎉 Workflow completed successfully! All releases have been processed."
+          fi
+
+      - name: Completion Message
+        run: echo "🚀 Release creation process has finished!"
