@@ -5,7 +5,7 @@ import customOrderRule from './css-rules/custom-order/rule-definition.js';
 export const vanillaExtract = {
   meta: {
     name: '@antebudimir/eslint-plugin-vanilla-extract',
-    version: '1.4.3',
+    version: '1.4.4',
   },
   rules: {
     'alphabetical-order': alphabeticalOrderRule,
