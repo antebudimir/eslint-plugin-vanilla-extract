@@ -6,18 +6,8 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['html', 'json', 'text'],
       reportsDirectory: './coverage/vitest-reports',
-      //   include: ['src/**/rule-definition.ts'],
-      include: ['src/**/*.ts', '!src/**/*.test.ts', '!src/**/__tests__/**'],
-      //   exclude: [
-      //     'src/**/*.css.ts',
-      //     'src/**/*.test.ts',
-      //     'src/**/*constants.ts',
-      //     'src/**/*index.ts',
-      //     // Exclude all icon directories and their contents
-      //     'src/components/common/icons/**',
-      //     // But include the CheckboxIcon component
-      //     '!src/components/common/icons/checkbox-icon/CheckboxIcon.tsx',
-      //   ],
+      include: ['src/css-rules/**/*.ts', 'src/shared-utils/**/*.ts'],
+      exclude: ['src/**/*.css.ts', 'src/**/*index.ts', 'src/**/*types.ts'],
     },
     reporters: [
       'default',

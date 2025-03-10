@@ -12,15 +12,11 @@ export const processStyleNode = (
   node: TSESTree.Node | undefined,
   processProperty: (ruleContext: Rule.RuleContext, value: TSESTree.ObjectExpression) => void,
 ): void => {
-  if (!node) {
-    return;
-  }
-
-  if (node.type === 'ObjectExpression') {
+  if (node?.type === 'ObjectExpression') {
     processProperty(ruleContext, node);
   }
 
-  if (node.type === 'ArrayExpression') {
+  if (node?.type === 'ArrayExpression') {
     node.elements.forEach((element) => {
       if (element && element.type === 'ObjectExpression') {
         processProperty(ruleContext, element);

@@ -30,4 +30,4 @@ indexTsContent = indexTsContent.replace(/version: '(\d+\.\d+\.\d+)'/, `version: 
 // Write the updated content back to src/index.ts
 await fs.writeFile(indexTsPath, indexTsContent);
 
-console.log(`Updated src/index.ts to version ${newVersion}`);
+console.log(`Updated package.json and src/index.ts to version ${newVersion}`);
