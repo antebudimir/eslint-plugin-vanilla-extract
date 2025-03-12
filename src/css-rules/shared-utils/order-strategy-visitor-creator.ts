@@ -40,7 +40,7 @@ export const createNodeVisitors = (
         return enforceConcentricCSSOrderInStyleObject;
       case 'userDefinedGroupOrder':
         if (!userDefinedGroupOrder || userDefinedGroupOrder.length === 0) {
-          throw new Error('💥 👿 User-defined group order must be provided for userDefinedGroupOrder strategy');
+          return enforceAlphabeticalCSSOrderInStyleObject;
         }
         return (ruleContext: Rule.RuleContext, node: TSESTree.Node) =>
           enforceUserDefinedGroupOrderInStyleObject(

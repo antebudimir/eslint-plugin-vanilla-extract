@@ -139,11 +139,20 @@ export const myStyle = style({
 
 ### vanilla-extract/custom-order
 
-The `vanilla-extract/custom-order` rule allows you to enforce a custom ordering of CSS properties in your vanilla-extract styles. You can specify an array of property groups in the order you prefer, and the rule will ensure that properties within these groups are sorted according to their position in the concentric CSS model. All other groups that aren't included in the groups array will have their respective properties sorted after the last group in the array. You can choose to sort them either alphabetically or following the concentric CSS order (see list of concentric groups) by setting the `sortRemainingProperties` option to 'alphabetical' or 'concentric' respectively. If not set, `sortRemainingProperties` defaults to 'alphabetical'.
+The `vanilla-extract/custom-order` rule enables you to enforce a custom ordering of CSS properties in your vanilla-extract styles. You can specify an array of property groups in your preferred order, and the rule will ensure that properties within these groups are sorted according to their position in the concentric CSS model.
 
-To configure the rule, add it to your ESLint configuration file with your desired options. You can customize the `groups` array to include any number of available CSS property groups you want to enforce, but minimum of 1 is required.
+Key features of this rule include:
 
-Example usage:
+1. Custom group ordering: Define your preferred order of CSS property groups.
+2. Handling of unspecified groups: All groups not included in the custom array will have their properties sorted after the last specified group.
+3. Flexible sorting options: You can choose to sort remaining properties either alphabetically or following the concentric CSS order by setting the `sortRemainingProperties` option to 'alphabetical' or 'concentric' respectively.
+
+Default behavior:
+
+- If not set, `sortRemainingProperties` defaults to 'alphabetical'.
+- If no `groupOrder` is specified or an empty array is provided, the rule will default to sorting all properties alphabetically, and `sortRemainingProperties` will be ignored even if set.
+
+To configure the rule, add it to your ESLint configuration file with your desired options. You can customize the `groups` array to include any number of available CSS property groups you want to enforce, with a minimum of one group required.
 
 ```typescript
 // ❌ Incorrect (Unordered)

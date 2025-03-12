@@ -65,21 +65,19 @@ export const enforceConcentricCSSOrder = (
   ruleContext: Rule.RuleContext,
   cssPropertyInfoList: CSSPropertyInfo[],
 ): void => {
-  if (cssPropertyInfoList.length <= 1) {
-    return;
-  }
+  if (cssPropertyInfoList.length > 1) {
+    // Create pairs of consecutive properties
+    const propertyPairs = cssPropertyInfoList.slice(0, -1).map((currentProperty, index) => ({
+      currentProperty,
+      nextProperty: cssPropertyInfoList[index + 1] as CSSPropertyInfo,
+    }));
 
-  // Create pairs of consecutive properties
-  const propertyPairs = cssPropertyInfoList.slice(0, -1).map((currentProperty, index) => ({
-    currentProperty,
-    nextProperty: cssPropertyInfoList[index + 1] as CSSPropertyInfo,
-  }));
+    const violatingPair = propertyPairs.find(
+      ({ currentProperty, nextProperty }) => compareProperties(currentProperty, nextProperty) > 0,
+    );
 
-  const violatingPair = propertyPairs.find(
-    ({ currentProperty, nextProperty }) => compareProperties(currentProperty, nextProperty) > 0,
-  );
-
-  if (violatingPair) {
-    reportOrderingIssue(ruleContext, violatingPair.currentProperty, violatingPair.nextProperty, cssPropertyInfoList);
+    if (violatingPair) {
+      reportOrderingIssue(ruleContext, violatingPair.currentProperty, violatingPair.nextProperty, cssPropertyInfoList);
+    }
   }
 };

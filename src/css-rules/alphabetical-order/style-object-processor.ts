@@ -20,18 +20,16 @@ export const enforceAlphabeticalCSSOrderInStyleObject = (
   ruleContext: Rule.RuleContext,
   styleObject: TSESTree.ObjectExpression,
 ): void => {
-  if (!styleObject || styleObject.type !== AST_NODE_TYPES.ObjectExpression) {
-    return;
-  }
+  if (styleObject?.type === AST_NODE_TYPES.ObjectExpression) {
+    if (isSelectorsObject(styleObject)) {
+      processNestedSelectors(ruleContext, styleObject, enforceAlphabeticalCSSOrderInStyleObject);
+      return;
+    }
 
-  if (isSelectorsObject(styleObject)) {
+    const { regularProperties } = separateProperties(styleObject.properties);
+
+    enforceAlphabeticalCSSOrder(ruleContext, regularProperties);
+
     processNestedSelectors(ruleContext, styleObject, enforceAlphabeticalCSSOrderInStyleObject);
-    return;
   }
-
-  const { regularProperties } = separateProperties(styleObject.properties);
-
-  enforceAlphabeticalCSSOrder(ruleContext, regularProperties);
-
-  processNestedSelectors(ruleContext, styleObject, enforceAlphabeticalCSSOrderInStyleObject);
 };

@@ -23,20 +23,18 @@ export const enforceUserDefinedGroupOrderInRecipe = (
   userDefinedGroups: string[],
   sortRemainingPropertiesMethod?: 'alphabetical' | 'concentric',
 ): void => {
-  if (!callExpression.arguments[0] || callExpression.arguments[0].type !== 'ObjectExpression') {
-    return;
-  }
+  if (callExpression.arguments[0]?.type === 'ObjectExpression') {
+    const recipeObjectExpression = callExpression.arguments[0];
 
-  const recipeObjectExpression = callExpression.arguments[0];
-
-  processRecipeProperties(ruleContext, recipeObjectExpression, (currentContext, styleObject) =>
-    processStyleNode(currentContext, styleObject, (styleContext, styleObjectNode) =>
-      enforceUserDefinedGroupOrderInStyleObject(
-        styleContext,
-        styleObjectNode,
-        userDefinedGroups,
-        sortRemainingPropertiesMethod,
+    processRecipeProperties(ruleContext, recipeObjectExpression, (currentContext, styleObject) =>
+      processStyleNode(currentContext, styleObject, (styleContext, styleObjectNode) =>
+        enforceUserDefinedGroupOrderInStyleObject(
+          styleContext,
+          styleObjectNode,
+          userDefinedGroups,
+          sortRemainingPropertiesMethod,
+        ),
       ),
-    ),
-  );
+    );
+  }
 };

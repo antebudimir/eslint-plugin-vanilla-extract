@@ -16,13 +16,11 @@ import { enforceAlphabeticalCSSOrderInStyleObject } from './style-object-process
  * 3. For each relevant property (e.g., 'base', 'variants'), it applies alphabetical ordering to the CSS properties.
  */
 export const enforceAlphabeticalCSSOrderInRecipe = (node: TSESTree.CallExpression, context: Rule.RuleContext): void => {
-  if (!node.arguments[0] || node.arguments[0].type !== 'ObjectExpression') {
-    return;
+  if (node.arguments[0]?.type === 'ObjectExpression') {
+    const recipeObject = node.arguments[0];
+
+    processRecipeProperties(context, recipeObject, (context, object) =>
+      processStyleNode(context, object, enforceAlphabeticalCSSOrderInStyleObject),
+    );
   }
-
-  const recipeObject = node.arguments[0];
-
-  processRecipeProperties(context, recipeObject, (context, object) =>
-    processStyleNode(context, object, enforceAlphabeticalCSSOrderInStyleObject),
-  );
 };

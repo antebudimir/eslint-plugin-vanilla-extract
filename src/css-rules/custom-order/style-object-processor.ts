@@ -29,51 +29,49 @@ export const enforceUserDefinedGroupOrderInStyleObject = (
   userDefinedGroups: string[],
   sortRemainingPropertiesMethod: 'alphabetical' | 'concentric' = 'concentric',
 ): void => {
-  if (!styleObject || styleObject.type !== AST_NODE_TYPES.ObjectExpression) {
-    return;
-  }
+  if (styleObject?.type === AST_NODE_TYPES.ObjectExpression) {
+    if (isSelectorsObject(styleObject)) {
+      styleObject.properties.forEach((property) => {
+        if (property.type === AST_NODE_TYPES.Property && property.value.type === AST_NODE_TYPES.ObjectExpression) {
+          enforceUserDefinedGroupOrderInStyleObject(
+            ruleContext,
+            property.value,
+            userDefinedGroups,
+            sortRemainingPropertiesMethod,
+          );
+        }
+      });
+      return;
+    }
 
-  if (isSelectorsObject(styleObject)) {
-    styleObject.properties.forEach((property) => {
-      if (property.type === AST_NODE_TYPES.Property && property.value.type === AST_NODE_TYPES.ObjectExpression) {
-        enforceUserDefinedGroupOrderInStyleObject(
-          ruleContext,
-          property.value,
-          userDefinedGroups,
-          sortRemainingPropertiesMethod,
-        );
-      }
+    const cssPropertyPriorityMap = createCSSPropertyPriorityMap(userDefinedGroups);
+
+    const { regularProperties } = separateProperties(styleObject.properties);
+    const cssPropertyInfoList: CSSPropertyInfo[] = regularProperties.map((property) => {
+      const propertyName = getPropertyName(property);
+      const propertyInfo = cssPropertyPriorityMap.get(propertyName);
+      const group =
+        userDefinedGroups.find((groupName) => concentricGroups[groupName]?.includes(propertyName)) || 'remaining';
+
+      return {
+        name: propertyName,
+        node: property,
+        priority: propertyInfo?.groupIndex ?? Number.MAX_SAFE_INTEGER,
+        positionInGroup: propertyInfo?.positionInGroup ?? Number.MAX_SAFE_INTEGER,
+        group,
+        inUserGroup: propertyInfo?.inUserGroup ?? false,
+      };
     });
-    return;
+
+    enforceCustomGroupOrder(ruleContext, cssPropertyInfoList, userDefinedGroups, sortRemainingPropertiesMethod);
+
+    processNestedSelectors(ruleContext, styleObject, (nestedContext, nestedNode) =>
+      enforceUserDefinedGroupOrderInStyleObject(
+        nestedContext,
+        nestedNode,
+        userDefinedGroups,
+        sortRemainingPropertiesMethod,
+      ),
+    );
   }
-
-  const cssPropertyPriorityMap = createCSSPropertyPriorityMap(userDefinedGroups);
-
-  const { regularProperties } = separateProperties(styleObject.properties);
-  const cssPropertyInfoList: CSSPropertyInfo[] = regularProperties.map((property) => {
-    const propertyName = getPropertyName(property);
-    const propertyInfo = cssPropertyPriorityMap.get(propertyName);
-    const group =
-      userDefinedGroups.find((groupName) => concentricGroups[groupName]?.includes(propertyName)) || 'remaining';
-
-    return {
-      name: propertyName,
-      node: property,
-      priority: propertyInfo?.groupIndex ?? Number.MAX_SAFE_INTEGER,
-      positionInGroup: propertyInfo?.positionInGroup ?? Number.MAX_SAFE_INTEGER,
-      group,
-      inUserGroup: propertyInfo?.inUserGroup ?? false,
-    };
-  });
-
-  enforceCustomGroupOrder(ruleContext, cssPropertyInfoList, userDefinedGroups, sortRemainingPropertiesMethod);
-
-  processNestedSelectors(ruleContext, styleObject, (nestedContext, nestedNode) =>
-    enforceUserDefinedGroupOrderInStyleObject(
-      nestedContext,
-      nestedNode,
-      userDefinedGroups,
-      sortRemainingPropertiesMethod,
-    ),
-  );
 };

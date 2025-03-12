@@ -50,23 +50,21 @@ export const enforceConcentricCSSOrderInStyleObject = (
   ruleContext: Rule.RuleContext,
   styleObject: TSESTree.ObjectExpression,
 ): void => {
-  if (!styleObject || styleObject.type !== AST_NODE_TYPES.ObjectExpression) {
-    return;
+  if (styleObject?.type === AST_NODE_TYPES.ObjectExpression) {
+    if (isSelectorsObject(styleObject)) {
+      styleObject.properties.forEach((property) => {
+        if (property.type === AST_NODE_TYPES.Property && property.value.type === AST_NODE_TYPES.ObjectExpression) {
+          enforceConcentricCSSOrderInStyleObject(ruleContext, property.value);
+        }
+      });
+      return;
+    }
+
+    const { regularProperties } = separateProperties(styleObject.properties);
+    const cssPropertyInfoList = buildCSSPropertyInfoList(regularProperties);
+
+    enforceConcentricCSSOrder(ruleContext, cssPropertyInfoList);
+
+    processNestedSelectors(ruleContext, styleObject, enforceConcentricCSSOrderInStyleObject);
   }
-
-  if (isSelectorsObject(styleObject)) {
-    styleObject.properties.forEach((property) => {
-      if (property.type === AST_NODE_TYPES.Property && property.value.type === AST_NODE_TYPES.ObjectExpression) {
-        enforceConcentricCSSOrderInStyleObject(ruleContext, property.value);
-      }
-    });
-    return;
-  }
-
-  const { regularProperties } = separateProperties(styleObject.properties);
-  const cssPropertyInfoList = buildCSSPropertyInfoList(regularProperties);
-
-  enforceConcentricCSSOrder(ruleContext, cssPropertyInfoList);
-
-  processNestedSelectors(ruleContext, styleObject, enforceConcentricCSSOrderInStyleObject);
 };

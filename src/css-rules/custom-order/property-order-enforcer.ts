@@ -23,69 +23,74 @@ export const enforceCustomGroupOrder = (
   userDefinedGroups: string[] = [],
   sortRemainingProperties?: 'alphabetical' | 'concentric',
 ): void => {
-  if (cssPropertyInfoList.length <= 1) {
-    return;
-  }
+  if (cssPropertyInfoList.length > 1) {
+    const cssPropertyPriorityMap = createCSSPropertyPriorityMap(userDefinedGroups);
 
-  const cssPropertyPriorityMap = createCSSPropertyPriorityMap(userDefinedGroups);
+    const compareProperties = (firstProperty: CSSPropertyInfo, secondProperty: CSSPropertyInfo) => {
+      const firstPropertyInfo = cssPropertyPriorityMap.get(firstProperty.name) || {
+        groupIndex: Infinity,
+        positionInGroup: Infinity,
+        inUserGroup: false,
+      };
+      const secondPropertyInfo = cssPropertyPriorityMap.get(secondProperty.name) || {
+        groupIndex: Infinity,
+        positionInGroup: Infinity,
+        inUserGroup: false,
+      };
 
-  const compareProperties = (firstProperty: CSSPropertyInfo, secondProperty: CSSPropertyInfo) => {
-    const firstPropertyInfo = cssPropertyPriorityMap.get(firstProperty.name) || {
-      groupIndex: Infinity,
-      positionInGroup: Infinity,
-      inUserGroup: false,
-    };
-    const secondPropertyInfo = cssPropertyPriorityMap.get(secondProperty.name) || {
-      groupIndex: Infinity,
-      positionInGroup: Infinity,
-      inUserGroup: false,
-    };
-
-    if (firstPropertyInfo.inUserGroup !== secondPropertyInfo.inUserGroup) {
-      return firstPropertyInfo.inUserGroup ? -1 : 1;
-    }
-
-    if (firstPropertyInfo.inUserGroup) {
-      if (firstPropertyInfo.groupIndex !== secondPropertyInfo.groupIndex) {
-        return firstPropertyInfo.groupIndex - secondPropertyInfo.groupIndex;
+      if (firstPropertyInfo.inUserGroup !== secondPropertyInfo.inUserGroup) {
+        return firstPropertyInfo.inUserGroup ? -1 : 1;
       }
-      return firstPropertyInfo.positionInGroup - secondPropertyInfo.positionInGroup;
+
+      if (firstPropertyInfo.inUserGroup) {
+        if (firstPropertyInfo.groupIndex !== secondPropertyInfo.groupIndex) {
+          return firstPropertyInfo.groupIndex - secondPropertyInfo.groupIndex;
+        }
+        return firstPropertyInfo.positionInGroup - secondPropertyInfo.positionInGroup;
+      }
+
+      // For properties not in user-defined groups
+      if (sortRemainingProperties === 'alphabetical') {
+        return firstProperty.name.localeCompare(secondProperty.name);
+      } else {
+        return (
+          firstPropertyInfo.groupIndex - secondPropertyInfo.groupIndex ||
+          firstPropertyInfo.positionInGroup - secondPropertyInfo.positionInGroup
+        );
+      }
+    };
+
+    const sortedPropertyList = [...cssPropertyInfoList].sort(compareProperties);
+
+    // Find the first pair that violates the new ordering
+    const violatingProperty = cssPropertyInfoList
+      .slice(0, -1)
+      .find((currentProperty, index) => currentProperty.name !== sortedPropertyList[index]?.name);
+
+    if (violatingProperty) {
+      const indexInSorted = cssPropertyInfoList.indexOf(violatingProperty);
+      const sortedProperty = sortedPropertyList[indexInSorted];
+      // Defensive programming - sortedProperty will always exist and have a name because sortedPropertyList is derived from cssPropertyInfoList and cssPropertyInfoList exists and is non-empty
+      // Therefore, we can exclude the next line from coverage because it's unreachable in practice
+      /* v8 ignore next */
+      const nextPropertyName = sortedProperty?.name ?? '';
+
+      ruleContext.report({
+        node: violatingProperty.node as Rule.Node,
+        messageId: 'incorrectOrder',
+        data: {
+          currentProperty: violatingProperty.name,
+          nextProperty: nextPropertyName,
+        },
+        fix: (fixer) =>
+          generateFixesForCSSOrder(
+            fixer,
+            ruleContext,
+            cssPropertyInfoList,
+            compareProperties,
+            (propertyInfo) => propertyInfo.node as Rule.Node,
+          ),
+      });
     }
-
-    // For properties not in user-defined groups
-    if (sortRemainingProperties === 'alphabetical') {
-      return firstProperty.name.localeCompare(secondProperty.name);
-    } else {
-      return (
-        firstPropertyInfo.groupIndex - secondPropertyInfo.groupIndex ||
-        firstPropertyInfo.positionInGroup - secondPropertyInfo.positionInGroup
-      );
-    }
-  };
-
-  const sortedPropertyList = [...cssPropertyInfoList].sort(compareProperties);
-
-  // Find the first pair that violates the new ordering
-  const violatingProperty = cssPropertyInfoList
-    .slice(0, -1)
-    .find((currentProperty, index) => currentProperty.name !== sortedPropertyList[index]?.name);
-
-  if (violatingProperty) {
-    ruleContext.report({
-      node: violatingProperty.node as Rule.Node,
-      messageId: 'incorrectOrder',
-      data: {
-        currentProperty: violatingProperty.name,
-        nextProperty: sortedPropertyList[cssPropertyInfoList.indexOf(violatingProperty)]?.name || '',
-      },
-      fix: (fixer) =>
-        generateFixesForCSSOrder(
-          fixer,
-          ruleContext,
-          cssPropertyInfoList,
-          compareProperties,
-          (propertyInfo) => propertyInfo.node as Rule.Node,
-        ),
-    });
   }
 };

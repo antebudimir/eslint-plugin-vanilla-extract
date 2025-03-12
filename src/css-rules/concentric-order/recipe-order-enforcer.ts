@@ -19,13 +19,11 @@ export const enforceConcentricCSSOrderInRecipe = (
   ruleContext: Rule.RuleContext,
   callExpression: TSESTree.CallExpression,
 ): void => {
-  if (!callExpression.arguments[0] || callExpression.arguments[0].type !== 'ObjectExpression') {
-    return;
+  if (callExpression.arguments[0]?.type === 'ObjectExpression') {
+    const recipeObjectExpression = callExpression.arguments[0];
+
+    processRecipeProperties(ruleContext, recipeObjectExpression, (currentContext, styleObject) =>
+      processStyleNode(currentContext, styleObject, enforceConcentricCSSOrderInStyleObject),
+    );
   }
-
-  const recipeObjectExpression = callExpression.arguments[0];
-
-  processRecipeProperties(ruleContext, recipeObjectExpression, (currentContext, styleObject) =>
-    processStyleNode(currentContext, styleObject, enforceConcentricCSSOrderInStyleObject),
-  );
 };

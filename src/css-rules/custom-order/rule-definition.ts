@@ -34,10 +34,13 @@ const customGroupOrderRule: Rule.RuleModule = {
       },
     ],
     messages: {
-      incorrectOrder:
-        "Property '{{nextProperty}}' should come before '{{currentProperty}}' according to custom CSS group ordering.",
+      // default message for ordering in case no groupOrder is provided
+      alphabeticalOrder:
+        "Property '{{nextProperty}}' should come before '{{currentProperty}}' according to alphabetical ordering.",
       fontFaceOrder:
         "Properties in fontFace should be ordered with 'src' first, followed by other properties in alphabetical order. Property '{{nextProperty}}' should come before '{{currentProperty}}'.",
+      incorrectOrder:
+        "Property '{{nextProperty}}' should come before '{{currentProperty}}' according to custom CSS group ordering.",
     },
   },
   create(ruleContext: Rule.RuleContext) {
