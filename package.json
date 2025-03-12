@@ -1,6 +1,6 @@
 {
   "name": "@antebudimir/eslint-plugin-vanilla-extract",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "ESLint plugin for enforcing best practices in vanilla-extract CSS styles, including CSS property ordering and additional linting rules.",
   "author": "Ante Budimir",
   "license": "MIT",
@@ -56,29 +56,34 @@
   "engines": {
     "node": ">=18.18.0"
   },
-  "packageManager": "pnpm@10.5.0",
+  "packageManager": "pnpm@10.6.2",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
   "peerDependencies": {
     "eslint": ">=9.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
-    "@types/node": "^20.17.19",
-    "@typescript-eslint/eslint-plugin": "^8.25.0",
-    "@typescript-eslint/parser": "^8.25.0",
-    "@typescript-eslint/rule-tester": "^8.26.0",
-    "@typescript-eslint/utils": "^8.25.0",
+    "@types/node": "^20.17.24",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@typescript-eslint/parser": "^8.26.1",
+    "@typescript-eslint/rule-tester": "^8.26.1",
+    "@typescript-eslint/utils": "^8.26.1",
     "@vanilla-extract/css": "^1.17.1",
     "@vanilla-extract/recipes": "^0.5.5",
     "@vitest/coverage-v8": "3.0.8",
-    "eslint": "^9.21.0",
-    "eslint-config-prettier": "^10.0.2",
-    "eslint-import-resolver-typescript": "^3.8.3",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-import-resolver-typescript": "^3.8.5",
     "eslint-plugin-eslint-plugin": "^6.4.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-vitest-rule-tester": "^1.1.0",
-    "prettier": "^3.5.2",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.25.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.1",
     "vitest": "^3.0.8"
   }
 }
