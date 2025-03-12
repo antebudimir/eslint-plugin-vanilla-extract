@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & Discussions
+    url: https://github.com/antebudimir/eslint-plugin-vanilla-extract/discussions
+    about: Please ask questions here instead of opening an issue
+  - name: Documentation
+    url: https://github.com/antebudimir/eslint-plugin-vanilla-extract
+    about: Check the documentation before reporting issues
