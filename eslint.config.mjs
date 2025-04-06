@@ -4,7 +4,6 @@ import { FlatCompat } from '@eslint/eslintrc';
 import eslintPluginESLintPlugin from 'eslint-plugin-eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
 import * as tseslint from 'typescript-eslint';
-import vanillaExtract from '@antebudimir/eslint-plugin-vanilla-extract';
 
 // mimic CommonJS variables
 const __filename = fileURLToPath(import.meta.url);
@@ -76,25 +75,6 @@ export default [
     },
   },
   ...tseslint.configs.recommended,
-
-  {
-    files: ['**/*.css.ts'],
-    plugins: {
-      'vanilla-extract': vanillaExtract,
-    },
-    rules: {
-      // 'vanilla-extract/alphabetical-order': 'warn',
-      // 'vanilla-extract/concentric-order': 'error',
-      'vanilla-extract/custom-order': [
-        'error',
-        {
-          groupOrder: ['dimensions', 'margin', 'font', 'border', 'boxShadow'],
-          // Optional
-          sortRemainingProperties: 'concentric', // or 'alphabetical' (default)
-        },
-      ],
-    },
-  },
 
   {
     files: ['**/*.{js,ts}'],

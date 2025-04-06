@@ -1,10 +1,11 @@
 import type { Rule } from 'eslint';
 import { availableGroups } from '../concentric-order/concentric-groups.js';
 import { createNodeVisitors } from '../shared-utils/order-strategy-visitor-creator.js';
+import type { SortRemainingProperties } from '../concentric-order/types.js';
 
 interface CustomGroupRuleConfiguration {
   groupOrder?: string[];
-  sortRemainingProperties: 'alphabetical' | 'concentric';
+  sortRemainingProperties: SortRemainingProperties;
 }
 
 const customGroupOrderRule: Rule.RuleModule = {
@@ -46,7 +47,8 @@ const customGroupOrderRule: Rule.RuleModule = {
   create(ruleContext: Rule.RuleContext) {
     const ruleConfiguration = ruleContext.options[0] as CustomGroupRuleConfiguration;
     const userDefinedGroupOrder = ruleConfiguration?.groupOrder ?? [];
-    const sortRemainingPropertiesMethod = ruleConfiguration?.sortRemainingProperties ?? 'alphabetical';
+    const sortRemainingPropertiesMethod =
+      ruleConfiguration?.sortRemainingProperties ?? ('alphabetical' as SortRemainingProperties);
 
     return createNodeVisitors(
       ruleContext,

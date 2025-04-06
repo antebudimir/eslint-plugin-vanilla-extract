@@ -3,9 +3,9 @@ import { AST_NODE_TYPES, TSESTree } from '@typescript-eslint/utils';
 import { concentricGroups } from '../concentric-order/concentric-groups.js';
 import { createCSSPropertyPriorityMap } from '../shared-utils/css-property-priority-map.js';
 import { isSelectorsObject, processNestedSelectors } from '../shared-utils/nested-selectors-processor.js';
-import { getPropertyName, separateProperties } from '../shared-utils/property-separator.js';
+import { getPropertyNameForSorting, separateProperties } from '../shared-utils/property-separator.js';
 import { enforceCustomGroupOrder } from './property-order-enforcer.js';
-import type { CSSPropertyInfo } from '../concentric-order/types.js';
+import type { CSSPropertyInfo, SortRemainingProperties } from '../concentric-order/types.js';
 
 /**
  * Enforces a custom ordering of CSS properties based on user-defined groups in a given style object.
@@ -13,7 +13,7 @@ import type { CSSPropertyInfo } from '../concentric-order/types.js';
  * @param context The ESLint rule context for reporting and fixing issues.
  * @param styleObject The ObjectExpression node representing the style object to be processed.
  * @param userDefinedGroups An array of property groups in the desired order.
- * @param sortRemainingPropertiesMethod Strategy for sorting properties not in user-defined groups ('alphabetical' or 'concentric'). Defaults to 'concentric'.
+ * @param sortRemainingProperties Strategy for sorting properties not in user-defined groups ('alphabetical' or 'concentric'). Defaults to 'concentric'.
  *
  * This function:
  * 1. Validates the input styleObject.
@@ -27,7 +27,7 @@ export const enforceUserDefinedGroupOrderInStyleObject = (
   ruleContext: Rule.RuleContext,
   styleObject: TSESTree.ObjectExpression,
   userDefinedGroups: string[],
-  sortRemainingPropertiesMethod: 'alphabetical' | 'concentric' = 'concentric',
+  sortRemainingProperties: SortRemainingProperties = 'concentric',
 ): void => {
   if (styleObject?.type === AST_NODE_TYPES.ObjectExpression) {
     if (isSelectorsObject(styleObject)) {
@@ -37,7 +37,7 @@ export const enforceUserDefinedGroupOrderInStyleObject = (
             ruleContext,
             property.value,
             userDefinedGroups,
-            sortRemainingPropertiesMethod,
+            sortRemainingProperties,
           );
         }
       });
@@ -48,7 +48,7 @@ export const enforceUserDefinedGroupOrderInStyleObject = (
 
     const { regularProperties } = separateProperties(styleObject.properties);
     const cssPropertyInfoList: CSSPropertyInfo[] = regularProperties.map((property) => {
-      const propertyName = getPropertyName(property);
+      const propertyName = getPropertyNameForSorting(property);
       const propertyInfo = cssPropertyPriorityMap.get(propertyName);
       const group =
         userDefinedGroups.find((groupName) => concentricGroups[groupName]?.includes(propertyName)) || 'remaining';
@@ -63,15 +63,10 @@ export const enforceUserDefinedGroupOrderInStyleObject = (
       };
     });
 
-    enforceCustomGroupOrder(ruleContext, cssPropertyInfoList, userDefinedGroups, sortRemainingPropertiesMethod);
+    enforceCustomGroupOrder(ruleContext, cssPropertyInfoList, userDefinedGroups, sortRemainingProperties);
 
     processNestedSelectors(ruleContext, styleObject, (nestedContext, nestedNode) =>
-      enforceUserDefinedGroupOrderInStyleObject(
-        nestedContext,
-        nestedNode,
-        userDefinedGroups,
-        sortRemainingPropertiesMethod,
-      ),
+      enforceUserDefinedGroupOrderInStyleObject(nestedContext, nestedNode, userDefinedGroups, sortRemainingProperties),
     );
   }
 };

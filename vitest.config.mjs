@@ -6,7 +6,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['html', 'json', 'lcov', 'text'],
       reportsDirectory: './coverage/vitest-reports',
-      include: ['src/css-rules/**/*.ts', 'src/shared-utils/**/*.ts'],
+      include: ['src/css-rules/**/*.ts'],
       exclude: ['src/**/*.css.ts', 'src/**/*index.ts', 'src/**/*types.ts'],
     },
     reporters: [

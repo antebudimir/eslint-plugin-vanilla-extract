@@ -1,6 +1,6 @@
 # @antebudimir/eslint-plugin-vanilla-extract
 
-[![npm version](https://img.shields.io/npm/v/@antebudimir/eslint-plugin-vanilla-extract.svg)](https://www.npmjs.com/package/@antebudimir/eslint-plugin-vanilla-extract)    [![CI](https://github.com/antebudimir/eslint-plugin-vanilla-extract/actions/workflows/ci.yml/badge.svg)](https://github.com/antebudimir/eslint-plugin-vanilla-extract/actions/workflows/ci.yml)    [![Coverage Status](https://coveralls.io/repos/github/antebudimir/eslint-plugin-vanilla-extract/badge.svg?branch=main)](https://coveralls.io/github/antebudimir/eslint-plugin-vanilla-extract?branch=main)
+[![CI](https://github.com/antebudimir/eslint-plugin-vanilla-extract/actions/workflows/ci.yml/badge.svg)](https://github.com/antebudimir/eslint-plugin-vanilla-extract/actions/workflows/ci.yml)    [![Coverage Status](https://coveralls.io/repos/github/antebudimir/eslint-plugin-vanilla-extract/badge.svg?branch=main)](https://coveralls.io/github/antebudimir/eslint-plugin-vanilla-extract?branch=main)  [![npm version](https://img.shields.io/npm/v/@antebudimir/eslint-plugin-vanilla-extract.svg)](https://www.npmjs.com/package/@antebudimir/eslint-plugin-vanilla-extract)  ![NPM Downloads](https://img.shields.io/npm/d18m/%40antebudimir%2Feslint-plugin-vanilla-extract)
 
 An ESLint plugin for enforcing best practices in [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) CSS styles, including CSS property ordering and additional linting rules. Available presets are for alphabetical and [concentric](https://rhodesmill.org/brandon/2011/concentric-css/) CSS ordering. The plugin also supports a custom group ordering option based on groups available in [concentric CSS](src/css-rules/concentric-order/concentric-groups.ts).
 
@@ -193,6 +193,42 @@ export const myStyle = style({
 });
 ```
 
+### vanilla-extract/no-empty-style-blocks
+
+This rule detects and prevents empty style blocks in vanilla-extract stylesheets. It helps maintain cleaner codebases by eliminating empty style definitions that often result from incomplete refactoring or forgotten implementations.
+
+```typescript
+// ❌ Incorrect
+import { style } from '@vanilla-extract/css';
+
+export const emptyStyle = style({});
+
+export const nestedEmpty = style({
+  color: 'blue',
+
+  ':hover': {},
+  '@media': {
+    '(min-width: 768px)': {},
+  },
+});
+
+export const recipeWithEmptyVariants = recipe({
+  base: { color: 'black' },
+  variants: {},
+});
+
+// ✅ Correct
+import { style } from '@vanilla-extract/css';
+
+export const nestedEmpty = style({
+  color: 'blue',
+});
+
+export const recipeWithEmptyVariants = recipe({
+  base: { color: 'black' },
+});
+```
+
 ## Font Face Declarations
 
 For `fontFace` and `globalFontFace` API calls, all three ordering rules (alphabetical, concentric, and custom) enforce the same special ordering:
@@ -266,11 +302,12 @@ The roadmap outlines the project's current status and future plans:
 - Initial release with support for alphabetical, concentric, and custom group CSS ordering.
 - Auto-fix capability integrated into ESLint.
 - Support for multiple vanilla-extract APIs (e.g., `style`, `styleVariants`, `recipe`, `globalStyle`, `fontFace`, etc.).
-- Rules tested.
+- `no-empty-style-blocks` rule to disallow empty blocks.
+- Comprehensive rule testing.
 
 ### Current Work
 
-- `no-empty-blocks` rule to disallow empty blocks.
+- Setting up recommended ESLint configuration for the plugin.
 
 ### Upcoming Features
 

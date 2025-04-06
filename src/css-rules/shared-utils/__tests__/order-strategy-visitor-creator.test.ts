@@ -4,6 +4,7 @@ import { run } from 'eslint-vitest-rule-tester';
 import alphabeticalOrderRule from '../../alphabetical-order/rule-definition.js';
 import customGroupOrderRule from '../../custom-order/rule-definition.js';
 import { createNodeVisitors } from '../order-strategy-visitor-creator.js';
+import type { OrderingStrategy } from '../../types.js';
 import type { TSESTree } from '@typescript-eslint/utils';
 
 // Modified version of the custom order rule with empty group order
@@ -29,8 +30,8 @@ const defaultCaseRule = {
   ...alphabeticalOrderRule,
   create(context: Rule.RuleContext) {
     // Force the default case by passing an invalid ordering strategy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const visitors = createNodeVisitors(context, 'invalid-strategy' as any);
+
+    const visitors = createNodeVisitors(context, 'invalid-strategy' as OrderingStrategy);
     return visitors;
   },
 };
@@ -44,8 +45,7 @@ const nonIdentifierCalleeRule = {
         // Original rule's visitor will be called first
         const visitors = alphabeticalOrderRule.create(context);
         if (visitors.CallExpression) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          visitors.CallExpression(node as any);
+          visitors.CallExpression(node as unknown as Parameters<typeof visitors.CallExpression>[0]);
         }
       },
     };

@@ -7,3 +7,5 @@ export interface CSSPropertyInfo {
   positionInGroup: number;
   group?: string;
 }
+
+export type SortRemainingProperties = 'alphabetical' | 'concentric';

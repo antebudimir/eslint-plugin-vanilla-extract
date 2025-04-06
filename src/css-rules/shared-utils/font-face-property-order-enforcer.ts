@@ -1,7 +1,7 @@
 import type { Rule } from 'eslint';
 import { AST_NODE_TYPES, TSESTree } from '@typescript-eslint/utils';
 import { generateFixesForCSSOrder } from '../shared-utils/css-order-fixer.js';
-import { getPropertyName, separateProperties } from '../shared-utils/property-separator.js';
+import { getPropertyNameForSorting, separateProperties } from '../shared-utils/property-separator.js';
 import { comparePropertiesAlphabetically } from './alphabetical-property-comparator.js';
 
 /**
@@ -36,8 +36,8 @@ export const enforceFontFaceOrder = (
   );
 
   if (violatingPair) {
-    const nextPropertyName = getPropertyName(violatingPair.nextProperty);
-    const currentPropertyName = getPropertyName(violatingPair.currentProperty);
+    const nextPropertyName = getPropertyNameForSorting(violatingPair.nextProperty);
+    const currentPropertyName = getPropertyNameForSorting(violatingPair.currentProperty);
 
     ruleContext.report({
       node: violatingPair.nextProperty as Rule.Node,

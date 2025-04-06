@@ -22,12 +22,12 @@ const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
 const newVersion = packageJson.version;
 
 // Read src/index.ts
-let indexTsContent = await fs.readFile(indexTsPath, 'utf-8');
+const indexTsContent = await fs.readFile(indexTsPath, 'utf-8');
 
 // Replace the version string in src/index.ts
-indexTsContent = indexTsContent.replace(/version: '(\d+\.\d+\.\d+)'/, `version: '${newVersion}'`);
+const updatedIndexTsContent = indexTsContent.replace(/version: '(\d+\.\d+\.\d+)'/, `version: '${newVersion}'`);
 
 // Write the updated content back to src/index.ts
-await fs.writeFile(indexTsPath, indexTsContent);
+await fs.writeFile(indexTsPath, updatedIndexTsContent);
 
 console.log(`Updated package.json and src/index.ts to version ${newVersion}`);

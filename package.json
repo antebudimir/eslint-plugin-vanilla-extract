@@ -1,6 +1,6 @@
 {
   "name": "@antebudimir/eslint-plugin-vanilla-extract",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "ESLint plugin for enforcing best practices in vanilla-extract CSS styles, including CSS property ordering and additional linting rules.",
   "author": "Ante Budimir",
   "license": "MIT",
@@ -84,6 +84,6 @@
     "prettier": "^3.5.3",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.1",
-    "vitest": "^3.0.8"
+    "vitest": "3.0.8"
   }
 }

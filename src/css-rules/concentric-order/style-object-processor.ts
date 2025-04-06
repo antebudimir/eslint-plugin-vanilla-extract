@@ -2,7 +2,7 @@ import type { Rule } from 'eslint';
 import { AST_NODE_TYPES, TSESTree } from '@typescript-eslint/utils';
 import { createCSSPropertyPriorityMap } from '../shared-utils/css-property-priority-map.js';
 import { isSelectorsObject, processNestedSelectors } from '../shared-utils/nested-selectors-processor.js';
-import { getPropertyName, separateProperties } from '../shared-utils/property-separator.js';
+import { getPropertyNameForSorting, separateProperties } from '../shared-utils/property-separator.js';
 import { enforceConcentricCSSOrder } from './property-order-enforcer.js';
 import type { CSSPropertyInfo } from './types.js';
 
@@ -16,7 +16,7 @@ const cssPropertyPriorityMap = createCSSPropertyPriorityMap();
  */
 const buildCSSPropertyInfoList = (regularStyleProperties: TSESTree.Property[]): CSSPropertyInfo[] => {
   return regularStyleProperties.map((styleProperty) => {
-    const propertyName = getPropertyName(styleProperty);
+    const propertyName = getPropertyNameForSorting(styleProperty);
     const propertyInfo = cssPropertyPriorityMap.get(propertyName);
 
     return {

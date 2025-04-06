@@ -1,4 +1,4 @@
-import { getPropertyName } from './property-separator.js';
+import { getPropertyNameForSorting } from './property-separator.js';
 import type { TSESTree } from '@typescript-eslint/utils';
 
 /**
@@ -11,8 +11,8 @@ export const comparePropertiesAlphabetically = (
   firstProperty: TSESTree.Property,
   secondProperty: TSESTree.Property,
 ): number => {
-  const firstName = getPropertyName(firstProperty);
-  const secondName = getPropertyName(secondProperty);
+  const firstName = getPropertyNameForSorting(firstProperty);
+  const secondName = getPropertyNameForSorting(secondProperty);
 
   // Special handling for 'src' property - it should always come first (relates to font face APIs only)
   if (firstName === 'src') {
