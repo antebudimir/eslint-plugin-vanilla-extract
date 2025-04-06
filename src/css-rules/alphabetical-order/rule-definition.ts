@@ -1,5 +1,6 @@
 import type { Rule } from 'eslint';
 import { createNodeVisitors } from '../shared-utils/order-strategy-visitor-creator.js';
+import type { OrderingStrategy } from '../types.js';
 
 const alphabeticalOrderRule: Rule.RuleModule = {
   meta: {
@@ -18,7 +19,7 @@ const alphabeticalOrderRule: Rule.RuleModule = {
     },
   },
   create(context) {
-    return createNodeVisitors(context, 'alphabetical');
+    return createNodeVisitors(context, 'alphabetical' as OrderingStrategy);
   },
 };
 

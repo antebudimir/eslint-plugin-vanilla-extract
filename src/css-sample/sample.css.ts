@@ -432,3 +432,158 @@ export const selectButtonVariants = styleVariants({
     color: 'red',
   },
 });
+
+// Test cases for noEmptyStyleBlocksRule
+
+// export const myRecipe = recipe({
+//   base: {
+//     color: 'blue',
+//     selectors: {},
+//     '@media': {},
+//     '@supports': {},
+//   },
+//   variants: {
+//     size: {
+//       small: {
+//         selectors: {
+//           '&:hover': {},
+//         },
+//         '@media': {
+//           '(min-width: 768px)': {},
+//         },
+//         '@supports': {
+//           '(display: grid)': {},
+//         },
+//       },
+//     },
+//   },
+// });
+
+// const base = style({ padding: 12 });
+// export const variant = styleVariants({
+//   primary: [],
+//   secondary: [],
+//   bordered: {},
+//   borderless: {},
+// });
+
+// const baseStyles = {
+//   color: 'blue',
+//   margin: '10px',
+// };
+
+// const isDarkMode = false;
+
+// export const spreadStyle = style({
+//   ...baseStyles,
+//   ...{},
+// });
+
+// export const recipeWithNonObjectValue = recipe({
+//   base: { color: 'black' },
+//   variants: {
+//     color: {
+//       red: { color: 'red' },
+//       // string instead of object
+//       string: 'string',
+//       // variable instead of object
+//       variable: baseStyles,
+//     },
+//   },
+// });
+
+// export const conditionalStyle = style(isDarkMode ? {} : {});
+
+// export const recipeWithEmptyVariantValues = recipe({
+//   base: { color: 'black' },
+//   variants: {
+//     color: {
+//       blue: {},
+//       red: {},
+//     },
+//   },
+// });
+
+// export const nestedEmptyStyle = style({
+//   selectors: {
+//     '&:hover': {},
+//     '&:focus': {},
+//   },
+// });
+
+// const myEmptyStyle = style({});
+// export { myEmptyStyle };
+
+// export const emptyStyle1 = style({});
+// export const emptyStyle2 = style({});
+// export const emptyVariants = styleVariants({});
+// export const emptyRecipe = recipe({});
+
+// export const styleWithComments = style({
+//   /* This is an empty style */
+// });
+
+// export const styleWithEmptyMedia = style({
+//   color: 'blue',
+//   '@media': {
+//     '(min-width: 768px)': {},
+//   },
+// });
+
+// export const styleWithEmptySelector = style({
+//   color: 'blue',
+
+//   selectors: {
+//     '&:hover': {},
+//   },
+// });
+
+// export const recipeWithBothEmpty = recipe({
+//   base: {},
+//   variants: {},
+// });
+
+// export const recipeWithEmptyVariants = recipe({
+//   base: { color: 'black' },
+//   variants: {},
+// });
+
+// export const recipeWithEmptyBase = recipe({
+//   base: {},
+//   variants: {
+//     color: {
+//       blue: { color: 'blue' },
+//     },
+//   },
+// });
+
+// export const recipe = recipe({
+//   base: {},
+//   variants: {
+//     color: {
+//       red: {},
+//       blue: {},
+//     },
+//   },
+// });
+
+// export const recipeWithNonObjectVariants = recipe({
+//   base: { color: 'blue' },
+//   variants: {
+//     color: {
+//       size: 'string instead of object', // This is a string, not an object
+//       red: {},
+//     },
+//   },
+// });
+
+// Using the same empty object reference in both branches
+// export const myStyle = style(true ? {} : {});
+
+// export const emptyFontFace = fontFace({});
+// globalFontFace('GlobalFont', {});
+// globalKeyframes('a', {});
+// export const emptyKeyframes = keyframes({});
+// globalStyle('ul', {});
+// export const emptyStyleVariants = styleVariants({});
+// export const emptyStyle = style({});

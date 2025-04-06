@@ -14,15 +14,13 @@ const fontFaceEdgeCasesRule = {
       CallExpression(node: TSESTree.CallExpression) {
         if (node.callee.type === 'Identifier' && node.callee.name === 'testNullCase') {
           // This will trigger the first early return
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          enforceFontFaceOrder(context, null as any);
+          enforceFontFaceOrder(context, null as unknown as TSESTree.ObjectExpression);
         }
 
         // Test case for non-ObjectExpression node
         if (node.callee.type === 'Identifier' && node.callee.name === 'testNonObjectCase') {
           // This will trigger the first early return (wrong type)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          enforceFontFaceOrder(context, { type: 'Literal' } as any);
+          enforceFontFaceOrder(context, { type: 'Literal' } as unknown as TSESTree.ObjectExpression);
         }
 
         // Test case for empty or single property object
@@ -41,8 +39,7 @@ const fontFaceEdgeCasesRule = {
                 shorthand: false,
               },
             ],
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          } as any);
+          } as TSESTree.ObjectExpression);
         }
       },
     };

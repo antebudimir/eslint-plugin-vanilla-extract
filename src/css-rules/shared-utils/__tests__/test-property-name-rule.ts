@@ -1,5 +1,5 @@
 import type { Rule } from 'eslint';
-import { getPropertyName } from '../property-separator.js';
+import { getPropertyNameForSorting } from '../property-separator.js';
 import type { TSESTree } from '@typescript-eslint/utils';
 
 const testRuleForPropertyNameExtractor: Rule.RuleModule = {
@@ -22,8 +22,8 @@ const testRuleForPropertyNameExtractor: Rule.RuleModule = {
         // Extract property names without enforcing any order
         node.properties.forEach((property) => {
           if (property.type === 'Property') {
-            // Test the getPropertyName function
-            getPropertyName(property as TSESTree.Property);
+            // Test the getPropertyNameForSorting function
+            getPropertyNameForSorting(property as TSESTree.Property);
           }
         });
       },

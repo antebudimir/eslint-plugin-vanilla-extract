@@ -10,7 +10,7 @@ import { TSESTree } from '@typescript-eslint/utils';
  * - Literal (string): Returns the string value.
  * For any other type of key, it returns an empty string.
  */
-export const getPropertyName = (property: TSESTree.Property): string => {
+export const getPropertyNameForSorting = (property: TSESTree.Property): string => {
   if (property.key.type === 'Identifier') {
     return property.key.name;
   } else if (property.key.type === 'Literal' && typeof property.key.value === 'string') {
@@ -43,7 +43,7 @@ export const separateProperties = (
   // Separate regular CSS properties from special ones (pseudo selectors, etc.)
   properties.forEach((property) => {
     if (property.type === 'Property') {
-      const propName = getPropertyName(property);
+      const propName = getPropertyNameForSorting(property);
 
       if (propName.startsWith(':') || propName.startsWith('@') || propName === 'selectors') {
         specialProperties.push(property);

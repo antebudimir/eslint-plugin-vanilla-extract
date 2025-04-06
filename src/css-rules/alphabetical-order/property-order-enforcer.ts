@@ -2,7 +2,7 @@ import type { Rule } from 'eslint';
 import { TSESTree } from '@typescript-eslint/utils';
 import { comparePropertiesAlphabetically } from '../shared-utils/alphabetical-property-comparator.js';
 import { generateFixesForCSSOrder } from '../shared-utils/css-order-fixer.js';
-import { getPropertyName } from '../shared-utils/property-separator.js';
+import { getPropertyNameForSorting } from '../shared-utils/property-separator.js';
 
 /**
  * Reports an ordering issue to ESLint and generates fixes.
@@ -21,8 +21,8 @@ const reportOrderingIssue = (
     node: nextProperty as Rule.Node,
     messageId: 'alphabeticalOrder',
     data: {
-      nextProperty: getPropertyName(nextProperty),
-      currentProperty: getPropertyName(currentProperty),
+      nextProperty: getPropertyNameForSorting(nextProperty),
+      currentProperty: getPropertyNameForSorting(currentProperty),
     },
     fix: (fixer) =>
       generateFixesForCSSOrder(

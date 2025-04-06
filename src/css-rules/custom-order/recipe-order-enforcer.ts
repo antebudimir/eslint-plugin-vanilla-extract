@@ -3,6 +3,7 @@ import { TSESTree } from '@typescript-eslint/utils';
 import { processRecipeProperties } from '../shared-utils/recipe-property-processor.js';
 import { processStyleNode } from '../shared-utils/style-node-processor.js';
 import { enforceUserDefinedGroupOrderInStyleObject } from './style-object-processor.js';
+import type { SortRemainingProperties } from '../concentric-order/types.js';
 
 /**
  * Enforces custom group ordering of CSS properties within a recipe function call.
@@ -21,7 +22,7 @@ export const enforceUserDefinedGroupOrderInRecipe = (
   ruleContext: Rule.RuleContext,
   callExpression: TSESTree.CallExpression,
   userDefinedGroups: string[],
-  sortRemainingPropertiesMethod?: 'alphabetical' | 'concentric',
+  sortRemainingProperties?: SortRemainingProperties,
 ): void => {
   if (callExpression.arguments[0]?.type === 'ObjectExpression') {
     const recipeObjectExpression = callExpression.arguments[0];
@@ -32,7 +33,7 @@ export const enforceUserDefinedGroupOrderInRecipe = (
           styleContext,
           styleObjectNode,
           userDefinedGroups,
-          sortRemainingPropertiesMethod,
+          sortRemainingProperties,
         ),
       ),
     );

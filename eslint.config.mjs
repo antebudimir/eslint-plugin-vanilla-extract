@@ -83,6 +83,7 @@ export default [
       'vanilla-extract': vanillaExtract,
     },
     rules: {
+      'vanilla-extract/no-empty-style-blocks': 'error',
       // 'vanilla-extract/alphabetical-order': 'warn',
       // 'vanilla-extract/concentric-order': 'error',
       'vanilla-extract/custom-order': [

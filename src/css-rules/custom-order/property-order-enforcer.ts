@@ -1,7 +1,7 @@
 import type { Rule } from 'eslint';
 import { generateFixesForCSSOrder } from '../shared-utils/css-order-fixer.js';
 import { createCSSPropertyPriorityMap } from '../shared-utils/css-property-priority-map.js';
-import type { CSSPropertyInfo } from '../concentric-order/types.js';
+import type { CSSPropertyInfo, SortRemainingProperties } from '../concentric-order/types.js';
 
 /**
  * Enforces a custom ordering of CSS properties based on user-defined groups.
@@ -21,7 +21,7 @@ export const enforceCustomGroupOrder = (
   ruleContext: Rule.RuleContext,
   cssPropertyInfoList: CSSPropertyInfo[],
   userDefinedGroups: string[] = [],
-  sortRemainingProperties?: 'alphabetical' | 'concentric',
+  sortRemainingProperties?: SortRemainingProperties,
 ): void => {
   if (cssPropertyInfoList.length > 1) {
     const cssPropertyPriorityMap = createCSSPropertyPriorityMap(userDefinedGroups);
@@ -50,7 +50,7 @@ export const enforceCustomGroupOrder = (
       }
 
       // For properties not in user-defined groups
-      if (sortRemainingProperties === 'alphabetical') {
+      if (sortRemainingProperties === ('alphabetical' as SortRemainingProperties)) {
         return firstProperty.name.localeCompare(secondProperty.name);
       } else {
         return (
@@ -70,9 +70,8 @@ export const enforceCustomGroupOrder = (
     if (violatingProperty) {
       const indexInSorted = cssPropertyInfoList.indexOf(violatingProperty);
       const sortedProperty = sortedPropertyList[indexInSorted];
-      // Defensive programming - sortedProperty will always exist and have a name because sortedPropertyList is derived from cssPropertyInfoList and cssPropertyInfoList exists and is non-empty
-      // Therefore, we can exclude the next line from coverage because it's unreachable in practice
-      /* v8 ignore next */
+      // Defensive programming - sortedProperty will always exist and have a name because sortedPropertyList is derived from cssPropertyInfoList and cssPropertyInfoList exists and is non-empty.
+      // This fallback is theoretically unreachable in practice but included for type safety.
       const nextPropertyName = sortedProperty?.name ?? '';
 
       ruleContext.report({

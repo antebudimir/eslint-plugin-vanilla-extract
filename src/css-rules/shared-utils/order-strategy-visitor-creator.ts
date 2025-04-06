@@ -8,6 +8,8 @@ import { enforceUserDefinedGroupOrderInRecipe } from '../custom-order/recipe-ord
 import { enforceUserDefinedGroupOrderInStyleObject } from '../custom-order/style-object-processor.js';
 import { enforceFontFaceOrder } from './font-face-property-order-enforcer.js';
 import { processStyleNode } from './style-node-processor.js';
+import type { SortRemainingProperties } from '../concentric-order/types.js';
+import type { OrderingStrategy } from '../types.js';
 
 /**
  * Creates an ESLint rule listener with visitors for style-related function calls.
@@ -27,9 +29,9 @@ import { processStyleNode } from './style-node-processor.js';
  */
 export const createNodeVisitors = (
   ruleContext: Rule.RuleContext,
-  orderingStrategy: 'alphabetical' | 'concentric' | 'userDefinedGroupOrder',
+  orderingStrategy: OrderingStrategy,
   userDefinedGroupOrder?: string[],
-  sortRemainingProperties?: 'alphabetical' | 'concentric',
+  sortRemainingProperties?: SortRemainingProperties,
 ): Rule.RuleListener => {
   // Select the appropriate property processing function based on the ordering strategy
   const processProperty = (() => {
