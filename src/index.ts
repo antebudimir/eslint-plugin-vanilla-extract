@@ -6,7 +6,7 @@ import noEmptyStyleBlocksRule from './css-rules/no-empty-blocks/rule-definition.
 export const vanillaExtract = {
   meta: {
     name: '@antebudimir/eslint-plugin-vanilla-extract',
-    version: '1.6.0',
+    version: '1.7.0',
   },
   rules: {
     'alphabetical-order': alphabeticalOrderRule,
@@ -15,32 +15,13 @@ export const vanillaExtract = {
     'no-empty-style-blocks': noEmptyStyleBlocksRule,
   },
   configs: {
-    recommended: [
-      {
-        plugins: {
-          'vanilla-extract': {
-            rules: {
-              'concentric-order': concentricOrderRule,
-              'no-empty-style-blocks': noEmptyStyleBlocksRule,
-            },
-          },
-        },
-        rules: {
-          'vanilla-extract/concentric-order': 'warn',
-          'vanilla-extract/no-empty-style-blocks': 'warn',
-        },
+    recommended: {
+      plugins: ['vanilla-extract'],
+      rules: {
+        'vanilla-extract/concentric-order': 'error',
+        'vanilla-extract/no-empty-style-blocks': 'error',
       },
-    ],
-    alphabetical: [
-      {
-        plugins: {
-          'vanilla-extract': {
-            rules: { 'alphabetical-order': alphabeticalOrderRule },
-          },
-        },
-        rules: { 'vanilla-extract/alphabetical-order': 'warn' },
-      },
-    ],
+    },
   },
 };
 

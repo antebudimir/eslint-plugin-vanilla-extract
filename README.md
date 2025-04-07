@@ -51,6 +51,43 @@ Create or update your `eslint.config.js` or `eslint.config.mjs` file:
 ```typescript
 import vanillaExtract from '@antebudimir/eslint-plugin-vanilla-extract';
 
+// Using the recommended configuration
+export default [
+  {
+    files: ['**/*.css.ts'],
+    ignores: ['src/**/theme-contract.css.ts'],
+    plugins: {
+      'vanilla-extract': vanillaExtract,
+    },
+    rules: {
+      // Apply all recommended rules
+      ...vanillaExtract.configs.recommended.rules,
+      
+      // Optionally override specific rules
+      // 'vanilla-extract/concentric-order': 'warn', // Change severity from error to warn
+      // 'vanilla-extract/no-empty-style-blocks': 'off', // Disable a recommended rule
+      
+      // Add additional rules not in recommended config
+      // 'vanilla-extract/alphabetical-order': 'error', // Override concentric-order rule
+    },
+  },
+];
+```
+
+### Recommended Configuration
+
+The recommended configuration enables the following rules with error severity:
+
+- `vanilla-extract/concentric-order`: Enforces concentric CSS property ordering
+- `vanilla-extract/no-empty-style-blocks`: Prevents empty style blocks
+
+You can use the recommended configuration as a starting point and override rules as needed for your project.
+
+### Custom Configuration
+
+If you prefer not to use the recommended configuration, you can still configure rules manually:
+
+```typescript
 export default [
   {
     files: ['**/*.css.ts'],
@@ -303,17 +340,17 @@ The roadmap outlines the project's current status and future plans:
 - Auto-fix capability integrated into ESLint.
 - Support for multiple vanilla-extract APIs (e.g., `style`, `styleVariants`, `recipe`, `globalStyle`, `fontFace`, etc.).
 - `no-empty-style-blocks` rule to disallow empty blocks.
+- Recommended ESLint configuration for the plugin.
 - Comprehensive rule testing.
 
 ### Current Work
 
-- Setting up recommended ESLint configuration for the plugin.
+- `no-zero-unit` rule to disallow units when the value is zero.
 
 ### Upcoming Features
 
 - `no-unknown-units` rule to disallow unknown units.
 - `no-number-trailing-zeros` rule to disallow trailing zeros in numbers.
-- `no-zero-unit` rule to disallow units when the value is zero.
 - `no-px-unit` rule to disallow use of `px` units with configurable whitelist.
 - `prefer-logical-properties` rule to enforce use of logical properties.
 - `prefer-theme-tokens` rule to enforce use of theme tokens instead of hard-coded values when available.
