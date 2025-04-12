@@ -13,11 +13,11 @@ import { areAllChildrenEmpty, getStyleKeyName } from './property-utils.js';
  * @param recipeNode The recipe object node to process.
  * @param reportedNodes A set of nodes that have already been reported by other processors.
  */
-export function processRecipeProperties(
+export const processRecipeProperties = (
   ruleContext: Rule.RuleContext,
   recipeNode: TSESTree.ObjectExpression,
   reportedNodes: Set<TSESTree.Node>,
-): void {
+): void => {
   recipeNode.properties.forEach((property) => {
     if (property.type !== 'Property') {
       return;
@@ -139,4 +139,4 @@ export function processRecipeProperties(
       }
     }
   });
-}
+};

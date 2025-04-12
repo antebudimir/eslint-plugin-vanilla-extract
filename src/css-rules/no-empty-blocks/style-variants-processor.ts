@@ -10,11 +10,11 @@ import { removeNodeWithComma } from './node-remover.js';
  * @param node The styleVariants call argument (object expression).
  * @param reportedNodes A set of nodes that have already been reported.
  */
-export function processStyleVariants(
+export const processStyleVariants = (
   ruleContext: Rule.RuleContext,
   node: TSESTree.ObjectExpression,
   reportedNodes: Set<TSESTree.Node>,
-): void {
+): void => {
   node.properties.forEach((property) => {
     if (property.type !== 'Property') {
       return;
@@ -50,4 +50,4 @@ export function processStyleVariants(
       return;
     }
   });
-}
+};

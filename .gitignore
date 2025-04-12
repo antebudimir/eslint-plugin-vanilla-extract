@@ -30,3 +30,6 @@ pnpm-debug.log*
 
 # typescript
 *.tsbuildinfo
+
+# dev helper
+src/css-sample/

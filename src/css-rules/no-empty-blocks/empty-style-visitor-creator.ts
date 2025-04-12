@@ -10,127 +10,9 @@ import { processRecipeProperties } from './recipe-processor.js';
 import { processStyleVariants } from './style-variants-processor.js';
 
 /**
- * Creates ESLint rule visitors for detecting empty style blocks in vanilla-extract.
- * @param ruleContext The ESLint rule rule context.
- * @returns An object with visitor functions for the ESLint rule.
- */
-export const createEmptyStyleVisitors = (ruleContext: Rule.RuleContext): Rule.RuleListener => {
-  // Track reported nodes to prevent duplicate reports
-  const reportedNodes = new Set<TSESTree.Node>();
-
-  return {
-    CallExpression(node) {
-      if (node.callee.type !== 'Identifier') {
-        return;
-      }
-
-      // Target vanilla-extract style functions
-      const styleApiFunctions = [
-        'style',
-        'styleVariants',
-        'recipe',
-        'globalStyle',
-        'fontFace',
-        'globalFontFace',
-        'keyframes',
-        'globalKeyframes',
-      ];
-
-      if (!styleApiFunctions.includes(node.callee.name) || node.arguments.length === 0) {
-        return;
-      }
-
-      // Handle styleVariants specifically
-      if (node.callee.name === 'styleVariants' && node.arguments[0]?.type === 'ObjectExpression') {
-        processStyleVariants(ruleContext, node.arguments[0] as TSESTree.ObjectExpression, reportedNodes);
-
-        // If the entire styleVariants object is empty after processing, remove the declaration
-        if (isEmptyObject(node.arguments[0] as TSESTree.ObjectExpression)) {
-          reportEmptyDeclaration(ruleContext, node.arguments[0] as TSESTree.Node, node as TSESTree.CallExpression);
-        }
-        return;
-      }
-
-      const defaultStyleArgumentIndex = 0;
-      const globalFunctionNames = ['globalStyle', 'globalFontFace', 'globalKeyframes'];
-      // Determine the style argument index based on the function name
-      const styleArgumentIndex = globalFunctionNames.includes(node.callee.name) ? 1 : defaultStyleArgumentIndex;
-
-      // For global functions, check if we have enough arguments
-      if (styleArgumentIndex === 1 && node.arguments.length <= styleArgumentIndex) {
-        return;
-      }
-
-      const styleArgument = node.arguments[styleArgumentIndex];
-
-      // This defensive check prevents duplicate processing of nodes.
-      // This code path's difficult to test because the ESLint visitor pattern
-      // typically ensures each node is only visited once per rule execution.
-      if (reportedNodes.has(styleArgument as TSESTree.Node)) {
-        return;
-      }
-
-      // Handle conditional expressions
-      if (styleArgument?.type === 'ConditionalExpression') {
-        processConditionalExpression(
-          ruleContext,
-          styleArgument as TSESTree.ConditionalExpression,
-          reportedNodes,
-          node as TSESTree.CallExpression,
-        );
-        return;
-      }
-
-      // Direct empty object case - remove the entire declaration
-      if (styleArgument?.type === 'ObjectExpression' && isEmptyObject(styleArgument as TSESTree.ObjectExpression)) {
-        reportedNodes.add(styleArgument as TSESTree.ObjectExpression);
-        reportEmptyDeclaration(ruleContext, styleArgument as TSESTree.Node, node as TSESTree.CallExpression);
-        return;
-      }
-
-      // For recipe - check if entire recipe is effectively empty
-      if (node.callee.name === 'recipe' && styleArgument?.type === 'ObjectExpression') {
-        if (isEffectivelyEmptyStylesObject(styleArgument as TSESTree.ObjectExpression)) {
-          reportedNodes.add(styleArgument as TSESTree.ObjectExpression);
-          reportEmptyDeclaration(ruleContext, styleArgument as TSESTree.Node, node as TSESTree.CallExpression);
-          return;
-        }
-
-        // Process individual properties in recipe
-        processRecipeProperties(ruleContext, styleArgument as TSESTree.ObjectExpression, reportedNodes);
-      }
-
-      // For style objects with nested empty objects
-      if (styleArgument?.type === 'ObjectExpression') {
-        // Check for spread elements
-        styleArgument.properties.forEach((property) => {
-          if (
-            property.type === 'SpreadElement' &&
-            property.argument.type === 'ObjectExpression' &&
-            isEmptyObject(property.argument as TSESTree.ObjectExpression)
-          ) {
-            reportedNodes.add(property.argument as TSESTree.Node);
-            ruleContext.report({
-              node: property.argument as Rule.Node,
-              messageId: 'emptySpreadObject',
-              fix(fixer) {
-                return removeNodeWithComma(ruleContext, property as TSESTree.Node, fixer);
-              },
-            });
-          }
-        });
-
-        // Process nested selectors and media queries
-        processEmptyNestedStyles(ruleContext, styleArgument as TSESTree.ObjectExpression, reportedNodes);
-      }
-    },
-  };
-};
-
-/**
  * Checks if a style object is effectively empty (contains only empty objects).
  */
-export function isEffectivelyEmptyStylesObject(stylesObject: TSESTree.ObjectExpression): boolean {
+export const isEffectivelyEmptyStylesObject = (stylesObject: TSESTree.ObjectExpression): boolean => {
   // Empty object itself
   if (stylesObject.properties.length === 0) {
     return true;
@@ -225,4 +107,122 @@ export function isEffectivelyEmptyStylesObject(stylesObject: TSESTree.ObjectExpr
 
   // If we have special properties and they're all empty, the style is effectively empty
   return specialProperties.length > 0 && allSpecialPropertiesEmpty;
-}
+};
+
+/**
+ * Creates ESLint rule visitors for detecting empty style blocks in vanilla-extract.
+ * @param ruleContext The ESLint rule rule context.
+ * @returns An object with visitor functions for the ESLint rule.
+ */
+export const createEmptyStyleVisitors = (ruleContext: Rule.RuleContext): Rule.RuleListener => {
+  // Track reported nodes to prevent duplicate reports
+  const reportedNodes = new Set<TSESTree.ObjectExpression>();
+
+  return {
+    CallExpression(node) {
+      if (node.callee.type !== 'Identifier') {
+        return;
+      }
+
+      // Target vanilla-extract style functions
+      const styleApiFunctions = [
+        'style',
+        'styleVariants',
+        'recipe',
+        'globalStyle',
+        'fontFace',
+        'globalFontFace',
+        'keyframes',
+        'globalKeyframes',
+      ];
+
+      if (!styleApiFunctions.includes(node.callee.name) || node.arguments.length === 0) {
+        return;
+      }
+
+      // Handle styleVariants specifically
+      if (node.callee.name === 'styleVariants' && node.arguments[0]?.type === 'ObjectExpression') {
+        processStyleVariants(ruleContext, node.arguments[0] as TSESTree.ObjectExpression, reportedNodes);
+
+        // If the entire styleVariants object is empty after processing, remove the declaration
+        if (isEmptyObject(node.arguments[0] as TSESTree.ObjectExpression)) {
+          reportEmptyDeclaration(ruleContext, node.arguments[0] as TSESTree.Node, node as TSESTree.CallExpression);
+        }
+        return;
+      }
+
+      const defaultStyleArgumentIndex = 0;
+      const globalFunctionNames = ['globalStyle', 'globalFontFace', 'globalKeyframes'];
+      // Determine the style argument index based on the function name
+      const styleArgumentIndex = globalFunctionNames.includes(node.callee.name) ? 1 : defaultStyleArgumentIndex;
+
+      // For global functions, check if we have enough arguments
+      if (styleArgumentIndex === 1 && node.arguments.length <= styleArgumentIndex) {
+        return;
+      }
+
+      const styleArgument = node.arguments[styleArgumentIndex];
+
+      // This defensive check prevents duplicate processing of nodes.
+      // This code path's difficult to test because the ESLint visitor pattern
+      // typically ensures each node is only visited once per rule execution.
+      if (reportedNodes.has(styleArgument as TSESTree.ObjectExpression)) {
+        return;
+      }
+
+      // Handle conditional expressions
+      if (styleArgument?.type === 'ConditionalExpression') {
+        processConditionalExpression(
+          ruleContext,
+          styleArgument as TSESTree.ConditionalExpression,
+          reportedNodes,
+          node as TSESTree.CallExpression,
+        );
+        return;
+      }
+
+      // Direct empty object case - remove the entire declaration
+      if (styleArgument?.type === 'ObjectExpression' && isEmptyObject(styleArgument as TSESTree.ObjectExpression)) {
+        reportedNodes.add(styleArgument as TSESTree.ObjectExpression);
+        reportEmptyDeclaration(ruleContext, styleArgument as TSESTree.Node, node as TSESTree.CallExpression);
+        return;
+      }
+
+      // For recipe - check if entire recipe is effectively empty
+      if (node.callee.name === 'recipe' && styleArgument?.type === 'ObjectExpression') {
+        if (isEffectivelyEmptyStylesObject(styleArgument as TSESTree.ObjectExpression)) {
+          reportedNodes.add(styleArgument as TSESTree.ObjectExpression);
+          reportEmptyDeclaration(ruleContext, styleArgument as TSESTree.Node, node as TSESTree.CallExpression);
+          return;
+        }
+
+        // Process individual properties in recipe
+        processRecipeProperties(ruleContext, styleArgument as TSESTree.ObjectExpression, reportedNodes);
+      }
+
+      // For style objects with nested empty objects
+      if (styleArgument?.type === 'ObjectExpression') {
+        // Check for spread elements
+        styleArgument.properties.forEach((property) => {
+          if (
+            property.type === 'SpreadElement' &&
+            property.argument.type === 'ObjectExpression' &&
+            isEmptyObject(property.argument as TSESTree.ObjectExpression)
+          ) {
+            reportedNodes.add(property.argument as TSESTree.ObjectExpression);
+            ruleContext.report({
+              node: property.argument as Rule.Node,
+              messageId: 'emptySpreadObject',
+              fix(fixer) {
+                return removeNodeWithComma(ruleContext, property as TSESTree.Node, fixer);
+              },
+            });
+          }
+        });
+
+        // Process nested selectors and media queries
+        processEmptyNestedStyles(ruleContext, styleArgument as TSESTree.ObjectExpression, reportedNodes);
+      }
+    },
+  };
+};

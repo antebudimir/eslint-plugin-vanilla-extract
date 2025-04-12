@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2025-04-12
+
+- add new rule `no-zero-unit` that enforces unitless zero values in vanilla-extract style objects
+  - Automatically removes unnecessary units from zero values (e.g., '0px' → '0')
+  - Handles both positive and negative zero values
+  - Preserves units where required (time properties, CSS functions)
+  - Works with all vanilla-extract APIs including style, recipe, fontFace, and keyframes
+  - Supports nested objects, media queries, and pseudo-selectors
+
 ## [1.7.0] - 2025-04-07
 
 - add a recommended configuration preset that enables concentric-order and no-empty-style-blocks rules with error severity.
