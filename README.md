@@ -66,6 +66,7 @@ export default [
       // Optionally override specific rules
       // 'vanilla-extract/concentric-order': 'warn', // Change severity from error to warn
       // 'vanilla-extract/no-empty-style-blocks': 'off', // Disable a recommended rule
+      // 'vanilla-extract/no-zero-unit': 'warn', // Change severity from error to warn
       
       // Add additional rules not in recommended config
       // 'vanilla-extract/alphabetical-order': 'error', // Override concentric-order rule
@@ -80,6 +81,7 @@ The recommended configuration enables the following rules with error severity:
 
 - `vanilla-extract/concentric-order`: Enforces concentric CSS property ordering
 - `vanilla-extract/no-empty-style-blocks`: Prevents empty style blocks
+- `vanilla-extract/no-zero-unit`: removes unnecessary units for zero values
 
 You can use the recommended configuration as a starting point and override rules as needed for your project.
 
@@ -108,6 +110,7 @@ export default [
           sortRemainingProperties: 'concentric', // 'alphabetical' is default
         },
       ],
+      'vanilla-extract/no-zero-unit': 'warn',
     },
   },
 ];
@@ -266,6 +269,34 @@ export const recipeWithEmptyVariants = recipe({
 });
 ```
 
+## vanilla-extract/no-zero-unit
+
+This rule enforces the removal of unnecessary units for zero values in vanilla-extract style objects. It helps maintain cleaner and more consistent CSS by eliminating redundant units when the value is zero.
+
+```typescript
+// ❌ Incorrect
+import { style } from '@vanilla-extract/css';
+
+export const myStyle = style({
+  margin: '0px',
+  padding: '0rem',
+  width: '0%',
+  height: '0vh',
+  top: '-0em',
+});
+
+// ✅ Correct
+import { style } from '@vanilla-extract/css';
+
+export const myStyle = style({
+  margin: '0',
+  padding: '0',
+  width: '0',
+  height: '0',
+  top: '0',
+});
+```
+
 ## Font Face Declarations
 
 For `fontFace` and `globalFontFace` API calls, all three ordering rules (alphabetical, concentric, and custom) enforce the same special ordering:
@@ -341,16 +372,16 @@ The roadmap outlines the project's current status and future plans:
 - Support for multiple vanilla-extract APIs (e.g., `style`, `styleVariants`, `recipe`, `globalStyle`, `fontFace`, etc.).
 - `no-empty-style-blocks` rule to disallow empty blocks.
 - Recommended ESLint configuration for the plugin.
+- `no-zero-unit` rule to disallow units when the value is zero.
 - Comprehensive rule testing.
 
 ### Current Work
 
-- `no-zero-unit` rule to disallow units when the value is zero.
+- `no-unknown-unit` rule to disallow unknown units.
 
 ### Upcoming Features
 
-- `no-unknown-units` rule to disallow unknown units.
-- `no-number-trailing-zeros` rule to disallow trailing zeros in numbers.
+- `no-number-trailing-zero` rule to disallow trailing zeros in numbers.
 - `no-px-unit` rule to disallow use of `px` units with configurable whitelist.
 - `prefer-logical-properties` rule to enforce use of logical properties.
 - `prefer-theme-tokens` rule to enforce use of theme tokens instead of hard-coded values when available.

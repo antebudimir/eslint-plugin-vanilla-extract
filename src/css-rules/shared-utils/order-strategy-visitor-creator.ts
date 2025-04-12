@@ -44,13 +44,8 @@ export const createNodeVisitors = (
         if (!userDefinedGroupOrder || userDefinedGroupOrder.length === 0) {
           return enforceAlphabeticalCSSOrderInStyleObject;
         }
-        return (ruleContext: Rule.RuleContext, node: TSESTree.Node) =>
-          enforceUserDefinedGroupOrderInStyleObject(
-            ruleContext,
-            node as TSESTree.ObjectExpression,
-            userDefinedGroupOrder,
-            sortRemainingProperties,
-          );
+        return (ruleContext: Rule.RuleContext, node: TSESTree.ObjectExpression) =>
+          enforceUserDefinedGroupOrderInStyleObject(ruleContext, node, userDefinedGroupOrder, sortRemainingProperties);
       default:
         return enforceAlphabeticalCSSOrderInStyleObject;
     }

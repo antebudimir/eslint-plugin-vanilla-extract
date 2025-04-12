@@ -6,12 +6,12 @@ import { reportEmptyDeclaration } from './fix-utils.js';
 /**
  * Handles conditional expressions with empty objects.
  */
-export function processConditionalExpression(
+export const processConditionalExpression = (
   context: Rule.RuleContext,
   node: TSESTree.ConditionalExpression,
   reportedNodes: Set<TSESTree.Node>,
   callNode: TSESTree.CallExpression,
-): void {
+): void => {
   const isConsequentEmpty = node.consequent.type === 'ObjectExpression' && isEmptyObject(node.consequent);
   const isAlternateEmpty = node.alternate.type === 'ObjectExpression' && isEmptyObject(node.alternate);
 
@@ -33,4 +33,4 @@ export function processConditionalExpression(
       messageId: 'emptyConditionalStyle',
     });
   }
-}
+};

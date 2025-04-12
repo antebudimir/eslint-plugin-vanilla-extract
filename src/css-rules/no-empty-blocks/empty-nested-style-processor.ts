@@ -7,11 +7,11 @@ import { areAllChildrenEmpty, getStyleKeyName } from './property-utils.js';
 /**
  * Processes nested style objects like selectors and media queries.
  */
-export function processEmptyNestedStyles(
+export const processEmptyNestedStyles = (
   ruleContext: Rule.RuleContext,
   node: TSESTree.ObjectExpression,
   reportedNodes: Set<TSESTree.Node>,
-): void {
+): void => {
   node.properties.forEach((property) => {
     if (property.type !== 'Property') {
       return;
@@ -72,4 +72,4 @@ export function processEmptyNestedStyles(
       });
     }
   });
-}
+};

@@ -4,7 +4,7 @@ import { isEmptyObject } from '../shared-utils/empty-object-processor.js';
 /**
  * Gets the property name regardless of whether it's an identifier or a literal.
  */
-export function getStyleKeyName(key: TSESTree.Expression | TSESTree.PrivateIdentifier): string | null {
+export const getStyleKeyName = (key: TSESTree.Expression | TSESTree.PrivateIdentifier): string | null => {
   if (key.type === 'Identifier') {
     return key.name;
   }
@@ -12,7 +12,7 @@ export function getStyleKeyName(key: TSESTree.Expression | TSESTree.PrivateIdent
     return key.value;
   }
   return null;
-}
+};
 
 /**
  * Checks if all properties in a style object are empty objects.
