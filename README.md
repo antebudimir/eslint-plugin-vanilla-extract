@@ -81,6 +81,7 @@ The recommended configuration enables the following rules with error severity:
 
 - `vanilla-extract/concentric-order`: Enforces concentric CSS property ordering
 - `vanilla-extract/no-empty-style-blocks`: Prevents empty style blocks
+- `vanilla-extract/no-unknown-unit`: prohibits usage of unrecognized CSS units.
 - `vanilla-extract/no-zero-unit`: removes unnecessary units for zero values
 
 You can use the recommended configuration as a starting point and override rules as needed for your project.
@@ -110,6 +111,7 @@ export default [
           sortRemainingProperties: 'concentric', // 'alphabetical' is default
         },
       ],
+      'vanilla-extract/no-unknown-unit': 'error',
       'vanilla-extract/no-zero-unit': 'warn',
     },
   },
@@ -269,6 +271,44 @@ export const recipeWithEmptyVariants = recipe({
 });
 ```
 
+## vanilla-extract/no-unknown-unit
+
+This rule enforces the use of valid CSS units in vanilla-extract style objects. It prevents typos and non-standard units that could cause styling issues or browser compatibility problems.
+
+```typescript
+// ❌ Incorrect
+import { style, globalStyle, recipe } from '@vanilla-extract/css';
+
+export const invalidStyle = style({
+  margin: '5abc',   // Non-existent unit
+  fontSize: '1.5rems', // Typo in unit
+});
+
+export const myRecipe = recipe({
+  variants: {
+    size: {
+      large: { padding: '4xm' } // Invalid unit
+    }
+  }
+});
+
+// ✅ Correct
+import { style, globalStyle, recipe } from '@vanilla-extract/css';
+
+export const validStyle = style({
+  margin: '5rem',
+  fontSize: '1.5rem',
+});
+
+export const myRecipe = recipe({
+  variants: {
+    size: {
+      large: { padding: '4em' }
+    }
+  }
+});
+```
+
 ## vanilla-extract/no-zero-unit
 
 This rule enforces the removal of unnecessary units for zero values in vanilla-extract style objects. It helps maintain cleaner and more consistent CSS by eliminating redundant units when the value is zero.
@@ -373,11 +413,12 @@ The roadmap outlines the project's current status and future plans:
 - `no-empty-style-blocks` rule to disallow empty blocks.
 - Recommended ESLint configuration for the plugin.
 - `no-zero-unit` rule to disallow units when the value is zero.
+- `no-unknown-unit` rule to disallow unknown units.
 - Comprehensive rule testing.
 
 ### Current Work
 
-- `no-unknown-unit` rule to disallow unknown units.
+- Support for using the plugin’s recommended config via the extends field (as discussed in [issue #3](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/3))
 
 ### Upcoming Features
 
@@ -386,6 +427,7 @@ The roadmap outlines the project's current status and future plans:
 - `prefer-logical-properties` rule to enforce use of logical properties.
 - `prefer-theme-tokens` rule to enforce use of theme tokens instead of hard-coded values when available.
 - `no-global-style` rule to disallow use of `globalStyle` function.
+- `property-unit-match` rule to enforce valid units per CSS property specs. **Note**: This feature will only be implemented if there's sufficient interest from the community.
 - Option to sort properties within user-defined concentric groups alphabetically instead of following the concentric order. **Note**: This feature will only be implemented if there's sufficient interest from the community.
 
 ## Contributing

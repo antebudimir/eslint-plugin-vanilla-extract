@@ -12,7 +12,7 @@ const noZeroUnitRule: Rule.RuleModule = {
     fixable: 'code',
     schema: [],
     messages: {
-      noZeroUnit: 'Unit with zero value is unnecessary. Use 0 instead.',
+      noZeroUnit: 'Zero values don’t need a unit. Replace with "0".',
     },
   },
   create(context) {

@@ -61,7 +61,6 @@ run({
   });
 `,
 
-    // Add these to the valid array
     // Test for global functions without enough arguments
     `
   import { globalStyle } from '@vanilla-extract/css';
