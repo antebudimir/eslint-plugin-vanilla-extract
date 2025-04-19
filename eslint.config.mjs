@@ -1,22 +1,10 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
 import eslintPluginESLintPlugin from 'eslint-plugin-eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
+import { defineConfig } from 'eslint/config';
+import prettierConfig from 'eslint-config-prettier';
 import * as tseslint from 'typescript-eslint';
 
-// mimic CommonJS variables
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-export default [
-  // mimic ESLintRC-style extends
-  // Prettier always must be last to override other style rules
-  ...compat.extends('prettier'),
+export default defineConfig([
   {
     files: ['**/*.js', '**/*.ts', '**/*.cjs', '**/*.mjs'],
     plugins: {
@@ -74,6 +62,7 @@ export default [
       'import/export': 'error',
     },
   },
+
   ...tseslint.configs.recommended,
 
   {
@@ -103,4 +92,6 @@ export default [
       'no-unused-vars': 'off',
     },
   },
-];
+
+  prettierConfig,
+]);

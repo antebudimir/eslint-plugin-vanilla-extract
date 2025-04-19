@@ -2,8 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.10.0] - 2025-04-19
+
+- confirm compatibility with ESLint 8.57.0
+- add support for ESLint v9 extends field in flat config
+- maintain backward compatibility with existing usage patterns
+- update [README.md](README.md#usage) with configuration examples for both ESLint 8 and ESLint 9
 
 ## [1.9.0] - 2025-04-16
 
@@ -12,7 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Handles all vanilla-extract APIs, including style, recipe, fontFace, and keyframes
   - Ignores valid units in special contexts (e.g., CSS functions, custom properties)
   - Supports nested objects, media queries, and pseudo-selectors
-  - No autofix is provided because replacing or removing unknown units may result in unintended or invalid CSS; manual developer review is required
+  - No autofix is provided because replacing or removing unknown units may result in unintended or invalid CSS; manual
+    developer review is required
 
 ## [1.8.0] - 2025-04-12
 
@@ -25,7 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.7.0] - 2025-04-07
 
-- add a recommended configuration preset that enables concentric-order and no-empty-style-blocks rules with error severity.
+- add a recommended configuration preset that enables concentric-order and no-empty-style-blocks rules with error
+  severity.
   - Fix plugin configuration structure to work properly
   - Set concentric-order and no-empty-style-blocks as recommended rules
   - Use error severity for recommended rules to enforce best practices

@@ -1,8 +1,15 @@
 # @antebudimir/eslint-plugin-vanilla-extract
 
-[![CI](https://github.com/antebudimir/eslint-plugin-vanilla-extract/actions/workflows/ci.yml/badge.svg)](https://github.com/antebudimir/eslint-plugin-vanilla-extract/actions/workflows/ci.yml)    [![Coverage Status](https://coveralls.io/repos/github/antebudimir/eslint-plugin-vanilla-extract/badge.svg?branch=main)](https://coveralls.io/github/antebudimir/eslint-plugin-vanilla-extract?branch=main)  [![npm version](https://img.shields.io/npm/v/@antebudimir/eslint-plugin-vanilla-extract.svg)](https://www.npmjs.com/package/@antebudimir/eslint-plugin-vanilla-extract)  ![NPM Downloads](https://img.shields.io/npm/d18m/%40antebudimir%2Feslint-plugin-vanilla-extract)
+[![CI](https://github.com/antebudimir/eslint-plugin-vanilla-extract/actions/workflows/ci.yml/badge.svg)](https://github.com/antebudimir/eslint-plugin-vanilla-extract/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/antebudimir/eslint-plugin-vanilla-extract/badge.svg?branch=main)](https://coveralls.io/github/antebudimir/eslint-plugin-vanilla-extract?branch=main)
+[![npm version](https://img.shields.io/npm/v/@antebudimir/eslint-plugin-vanilla-extract.svg)](https://www.npmjs.com/package/@antebudimir/eslint-plugin-vanilla-extract)
+![NPM Downloads](https://img.shields.io/npm/d18m/%40antebudimir%2Feslint-plugin-vanilla-extract)
 
-An ESLint plugin for enforcing best practices in [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) CSS styles, including CSS property ordering and additional linting rules. Available presets are for alphabetical and [concentric](https://rhodesmill.org/brandon/2011/concentric-css/) CSS ordering. The plugin also supports a custom group ordering option based on groups available in [concentric CSS](src/css-rules/concentric-order/concentric-groups.ts).
+An ESLint plugin for enforcing best practices in
+[vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) CSS styles, including CSS property ordering
+and additional linting rules. Available presets are for alphabetical and
+[concentric](https://rhodesmill.org/brandon/2011/concentric-css/) CSS ordering. The plugin also supports a custom group
+ordering option based on groups available in [concentric CSS](src/css-rules/concentric-order/concentric-groups.ts).
 
 ## Demo
 
@@ -14,7 +21,7 @@ An ESLint plugin for enforcing best practices in [vanilla-extract](https://githu
   - Alphabetical ordering for clean, predictable style organization
   - Concentric ordering for logical, outside-in property arrangement
 - Custom group ordering option for more fine-grained control
-- Built for ESLint 9 flat config system
+- Compatible with ESLint 8.57.0+ and fully optimized for ESLint 9's flat config system
 - Provides auto-fix capability to automatically sort properties
 - Handles multiple vanilla-extract APIs (style, styleVariants, recipe, globalStyle, etc.)
 - Handles complex cases like nested objects, arrays of styles, and pseudo selectors
@@ -23,9 +30,12 @@ An ESLint plugin for enforcing best practices in [vanilla-extract](https://githu
 
 ## Requirements
 
-- ESLint 9.0.0 or higher
+- ESLint 8.57.0 or higher
 - Node.js 18.18.0 or higher
 - ESM (ECMAScript Modules) only
+- Flat config system using either:
+  - `eslint.config.mjs` (recommended, always works with ESM plugins)
+  - `eslint.config.js` (only if your package.json has `"type": "module"`)
 
 ## Installation
 
@@ -38,21 +48,47 @@ yarn add --dev @antebudimir/eslint-plugin-vanilla-extract
 
 # Using pnpm
 pnpm add -D @antebudimir/eslint-plugin-vanilla-extract
+
+# For ESLint 8.57.0 with flat config, you'll also need:
+npm install --save-dev @eslint/eslintrc @eslint/js
+yarn add --dev @eslint/eslintrc @eslint/js
+pnpm add -D @eslint/eslintrc @eslint/js
 ```
 
 ## Usage
 
 **Note: This plugin is ESM-only.** It must be used with ESM configurations and can't be used with CommonJS `require()`.
 
-### ESLint Flat Config (ESLint 9+)
+### Configuration Options
 
-Create or update your `eslint.config.js` or `eslint.config.mjs` file:
+There are two main ways to configure this plugin in your ESLint flat config:
+
+### Option 1: Using extends (recommended, available from v1.10.0)
+
+The simplest way to apply the recommended ruleset:
 
 ```typescript
+import { defineConfig } from 'eslint/config';
 import vanillaExtract from '@antebudimir/eslint-plugin-vanilla-extract';
 
-// Using the recommended configuration
-export default [
+export default defineConfig([
+  {
+    files: ['**/*.css.ts'],
+    ignores: ['src/**/theme-contract.css.ts'],
+    extends: [vanillaExtract.configs.recommended],
+  },
+];
+```
+
+### Option 2: Using plugins with explicit rule configuration
+
+This approach gives you more control over individual rules:
+
+```typescript
+import { defineConfig } from 'eslint/config';
+import vanillaExtract from '@antebudimir/eslint-plugin-vanilla-extract';
+
+export default defineConfig([
   {
     files: ['**/*.css.ts'],
     ignores: ['src/**/theme-contract.css.ts'],
@@ -62,17 +98,91 @@ export default [
     rules: {
       // Apply all recommended rules
       ...vanillaExtract.configs.recommended.rules,
-      
+
       // Optionally override specific rules
       // 'vanilla-extract/concentric-order': 'warn', // Change severity from error to warn
       // 'vanilla-extract/no-empty-style-blocks': 'off', // Disable a recommended rule
       // 'vanilla-extract/no-zero-unit': 'warn', // Change severity from error to warn
-      
+
       // Add additional rules not in recommended config
       // 'vanilla-extract/alphabetical-order': 'error', // Override concentric-order rule
     },
   },
 ];
+```
+
+### Using with FlatCompat (for ESLint 8.57.0 & 8.57.1)
+
+If you're migrating from legacy ESLint configurations, you can use the `FlatCompat` utility to convert them while adding
+vanilla-extract support:
+
+```typescript
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { FlatCompat } from '@eslint/eslintrc';
+import js from '@eslint/js';
+import vanillaExtract from '@antebudimir/eslint-plugin-vanilla-extract';
+
+// Mimic CommonJS variables
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Create a compatibility layer instance
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+});
+
+export default [
+  // Convert your existing ESLint configs
+  ...compat.config({
+    extends: [
+      'eslint:recommended',
+      'plugin:@typescript-eslint/recommended',
+      // etc
+    ],
+  }),
+
+  // Add vanilla-extract by using explicit rule config
+  {
+    files: ['**/*.css.ts'],
+    ignores: ['src/**/theme-contract.css.ts'],
+    plugins: {
+      'vanilla-extract': vanillaExtract,
+    },
+    rules: {
+      // Apply all recommended rules
+      ...vanillaExtract.configs.recommended.rules,
+      // or specify rule by rule as described above
+    },
+  },
+];
+```
+
+#### Common Issues with FlatCompat
+
+1. **Error: "Unexpected top-level property 'files'"**
+
+   - Solution: When using `compat.config()`, use `overrides` instead of `files` at the top level.
+
+2. **Error: "Missing parameter 'recommendedConfig' in FlatCompat constructor"**
+
+   - Solution: Import `js` from `@eslint/js` and add `recommendedConfig: js.configs.recommended` to the FlatCompat
+     constructor.
+
+3. **Error: "Unexpected undefined config at user-defined index 0"**
+   - Solution: Make sure you're using a default export for your configuration array.
+
+### VS Code Integration
+
+For VS Code users, add these settings to your `.vscode/settings.json`:
+
+```json
+{
+  "eslint.useFlatConfig": true,
+  "eslint.experimental.useFlatConfig": true,
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"]
+}
 ```
 
 ### Recommended Configuration
@@ -181,20 +291,27 @@ export const myStyle = style({
 
 ### vanilla-extract/custom-order
 
-The `vanilla-extract/custom-order` rule enables you to enforce a custom ordering of CSS properties in your vanilla-extract styles. You can specify an array of property groups in your preferred order, and the rule will ensure that properties within these groups are sorted according to their position in the concentric CSS model.
+The `vanilla-extract/custom-order` rule enables you to enforce a custom ordering of CSS properties in your
+vanilla-extract styles. You can specify an array of property groups in your preferred order, and the rule will ensure
+that properties within these groups are sorted according to their position in the concentric CSS model.
 
 Key features of this rule include:
 
 1. Custom group ordering: Define your preferred order of CSS property groups.
-2. Handling of unspecified groups: All groups not included in the custom array will have their properties sorted after the last specified group.
-3. Flexible sorting options: You can choose to sort remaining properties either alphabetically or following the concentric CSS order by setting the `sortRemainingProperties` option to 'alphabetical' or 'concentric' respectively.
+2. Handling of unspecified groups: All groups not included in the custom array will have their properties sorted after
+   the last specified group.
+3. Flexible sorting options: You can choose to sort remaining properties either alphabetically or following the
+   concentric CSS order by setting the `sortRemainingProperties` option to 'alphabetical' or 'concentric' respectively.
 
 Default behavior:
 
 - If not set, `sortRemainingProperties` defaults to 'alphabetical'.
-- If no `groupOrder` is specified or an empty array is provided, the rule will default to sorting all properties alphabetically, and `sortRemainingProperties` will be ignored even if set.
+- If no `groupOrder` is specified or an empty array is provided, the rule will default to sorting all properties
+  alphabetically, and `sortRemainingProperties` will be ignored even if set.
 
-To configure the rule, add it to your ESLint configuration file with your desired options. You can customize the `groups` array to include any number of available CSS property groups you want to enforce, with a minimum of one group required.
+To configure the rule, add it to your ESLint configuration file with your desired options. You can customize the
+`groups` array to include any number of available CSS property groups you want to enforce, with a minimum of one group
+required.
 
 ```typescript
 // ❌ Incorrect (Unordered)
@@ -237,7 +354,8 @@ export const myStyle = style({
 
 ### vanilla-extract/no-empty-style-blocks
 
-This rule detects and prevents empty style blocks in vanilla-extract stylesheets. It helps maintain cleaner codebases by eliminating empty style definitions that often result from incomplete refactoring or forgotten implementations.
+This rule detects and prevents empty style blocks in vanilla-extract stylesheets. It helps maintain cleaner codebases by
+eliminating empty style definitions that often result from incomplete refactoring or forgotten implementations.
 
 ```typescript
 // ❌ Incorrect
@@ -273,23 +391,24 @@ export const recipeWithEmptyVariants = recipe({
 
 ## vanilla-extract/no-unknown-unit
 
-This rule enforces the use of valid CSS units in vanilla-extract style objects. It prevents typos and non-standard units that could cause styling issues or browser compatibility problems.
+This rule enforces the use of valid CSS units in vanilla-extract style objects. It prevents typos and non-standard units
+that could cause styling issues or browser compatibility problems.
 
 ```typescript
 // ❌ Incorrect
 import { style, globalStyle, recipe } from '@vanilla-extract/css';
 
 export const invalidStyle = style({
-  margin: '5abc',   // Non-existent unit
+  margin: '5abc', // Non-existent unit
   fontSize: '1.5rems', // Typo in unit
 });
 
 export const myRecipe = recipe({
   variants: {
     size: {
-      large: { padding: '4xm' } // Invalid unit
-    }
-  }
+      large: { padding: '4xm' }, // Invalid unit
+    },
+  },
 });
 
 // ✅ Correct
@@ -303,15 +422,16 @@ export const validStyle = style({
 export const myRecipe = recipe({
   variants: {
     size: {
-      large: { padding: '4em' }
-    }
-  }
+      large: { padding: '4em' },
+    },
+  },
 });
 ```
 
 ## vanilla-extract/no-zero-unit
 
-This rule enforces the removal of unnecessary units for zero values in vanilla-extract style objects. It helps maintain cleaner and more consistent CSS by eliminating redundant units when the value is zero.
+This rule enforces the removal of unnecessary units for zero values in vanilla-extract style objects. It helps maintain
+cleaner and more consistent CSS by eliminating redundant units when the value is zero.
 
 ```typescript
 // ❌ Incorrect
@@ -339,7 +459,8 @@ export const myStyle = style({
 
 ## Font Face Declarations
 
-For `fontFace` and `globalFontFace` API calls, all three ordering rules (alphabetical, concentric, and custom) enforce the same special ordering:
+For `fontFace` and `globalFontFace` API calls, all three ordering rules (alphabetical, concentric, and custom) enforce
+the same special ordering:
 
 1. The `src` property always appears first
 2. All remaining properties are sorted alphabetically
@@ -367,7 +488,8 @@ Opinionated, but it is what it is. If someone has a suggestion for a better orde
 
 ## Concentric CSS Model
 
-Here's a list of all available groups from the provided [concentricGroups](src/css-rules/concentric-order/concentric-groups.ts) array:
+Here's a list of all available groups from the provided
+[concentricGroups](src/css-rules/concentric-order/concentric-groups.ts) array:
 
 1. boxSizing
 2. position
@@ -399,7 +521,8 @@ Here's a list of all available groups from the provided [concentricGroups](src/c
 28. counters
 29. breaks
 
-These groups represent different categories of CSS properties, organized in a concentric order from outside to inside. Each group contains related CSS properties that affect specific aspects of an element's styling and layout.
+These groups represent different categories of CSS properties, organized in a concentric order from outside to inside.
+Each group contains related CSS properties that affect specific aspects of an element's styling and layout.
 
 ## Roadmap
 
@@ -414,21 +537,24 @@ The roadmap outlines the project's current status and future plans:
 - Recommended ESLint configuration for the plugin.
 - `no-zero-unit` rule to disallow units when the value is zero.
 - `no-unknown-unit` rule to disallow unknown units.
+- Support for using the plugin’s recommended config via the extends field (as discussed in
+  [issue #3](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/3))
 - Comprehensive rule testing.
 
 ### Current Work
 
-- Support for using the plugin’s recommended config via the extends field (as discussed in [issue #3](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/3))
+- `no-number-trailing-zero` rule to disallow trailing zeros in numbers.
 
 ### Upcoming Features
 
-- `no-number-trailing-zero` rule to disallow trailing zeros in numbers.
 - `no-px-unit` rule to disallow use of `px` units with configurable whitelist.
 - `prefer-logical-properties` rule to enforce use of logical properties.
 - `prefer-theme-tokens` rule to enforce use of theme tokens instead of hard-coded values when available.
 - `no-global-style` rule to disallow use of `globalStyle` function.
-- `property-unit-match` rule to enforce valid units per CSS property specs. **Note**: This feature will only be implemented if there's sufficient interest from the community.
-- Option to sort properties within user-defined concentric groups alphabetically instead of following the concentric order. **Note**: This feature will only be implemented if there's sufficient interest from the community.
+- `property-unit-match` rule to enforce valid units per CSS property specs. **Note**: This feature will only be
+  implemented if there's sufficient interest from the community.
+- Option to sort properties within user-defined concentric groups alphabetically instead of following the concentric
+  order. **Note**: This feature will only be implemented if there's sufficient interest from the community.
 
 ## Contributing
 

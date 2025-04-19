@@ -5,10 +5,10 @@ import noEmptyStyleBlocksRule from './css-rules/no-empty-blocks/rule-definition.
 import noUnknownUnitRule from './css-rules/no-unknown-unit/rule-definition.js';
 import noZeroUnitRule from './css-rules/no-zero-unit/rule-definition.js';
 
-export const vanillaExtract = {
+const vanillaExtract = {
   meta: {
     name: '@antebudimir/eslint-plugin-vanilla-extract',
-    version: '1.9.0',
+    version: '1.10.0',
   },
   rules: {
     'alphabetical-order': alphabeticalOrderRule,
@@ -18,17 +18,21 @@ export const vanillaExtract = {
     'no-unknown-unit': noUnknownUnitRule,
     'no-zero-unit': noZeroUnitRule,
   },
-  configs: {
-    recommended: {
-      plugins: ['vanilla-extract'],
-      rules: {
-        'vanilla-extract/concentric-order': 'error',
-        'vanilla-extract/no-empty-style-blocks': 'error',
-        'vanilla-extract/no-unknown-unit': 'error',
-        'vanilla-extract/no-zero-unit': 'error',
-      },
+  configs: {},
+};
+
+Object.assign(vanillaExtract.configs, {
+  recommended: {
+    plugins: {
+      'vanilla-extract': vanillaExtract,
+    },
+    rules: {
+      'vanilla-extract/concentric-order': 'error',
+      'vanilla-extract/no-empty-style-blocks': 'error',
+      'vanilla-extract/no-unknown-unit': 'error',
+      'vanilla-extract/no-zero-unit': 'error',
     },
   },
-};
+});
 
 export default vanillaExtract;
