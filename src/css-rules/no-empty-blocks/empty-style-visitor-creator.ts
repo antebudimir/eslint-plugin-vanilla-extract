@@ -1,13 +1,34 @@
 import type { Rule } from 'eslint';
 import { TSESTree } from '@typescript-eslint/utils';
 import { isEmptyObject } from '../shared-utils/empty-object-processor.js';
+import { ReferenceTracker, createReferenceTrackingVisitor } from '../shared-utils/reference-tracker.js';
 import { processConditionalExpression } from './conditional-processor.js';
 import { processEmptyNestedStyles } from './empty-nested-style-processor.js';
 import { reportEmptyDeclaration } from './fix-utils.js';
-import { removeNodeWithComma } from './node-remover.js';
 import { getStyleKeyName } from './property-utils.js';
 import { processRecipeProperties } from './recipe-processor.js';
 import { processStyleVariants } from './style-variants-processor.js';
+
+/**
+ * Checks if a nested object (selectors, media, supports) contains only empty objects.
+ */
+const isNestedObjectEmpty = (obj: TSESTree.ObjectExpression): boolean => {
+  if (obj.properties.length === 0) {
+    return true;
+  }
+
+  return obj.properties.every((property) => {
+    if (property.type !== 'Property') {
+      return true; // Skip non-property elements
+    }
+
+    if (property.value.type === 'ObjectExpression') {
+      return isEmptyObject(property.value);
+    }
+
+    return false; // Non-object values mean it's not empty
+  });
+};
 
 /**
  * Checks if a style object is effectively empty (contains only empty objects).
@@ -48,124 +69,127 @@ export const isEffectivelyEmptyStylesObject = (stylesObject: TSESTree.ObjectExpr
     }
   }
 
-  // If this looks like a recipe object (has base or variants)
+  // If this looks like a recipe (has base or variants), check recipe-specific emptiness
   if (hasBaseProperty || hasVariantsProperty) {
-    // A recipe is effectively empty if both base and variants are empty
     return isBaseEmpty && areAllVariantsEmpty;
   }
 
-  // / For non-recipe objects, check if all special properties (selectors, media queries, variants) are effectively empty
-  function isSpecialProperty(propertyName: string | null): boolean {
-    return (
-      propertyName === 'selectors' || (propertyName && propertyName.startsWith('@')) || propertyName === 'variants'
-    );
-  }
-
-  const specialProperties = stylesObject.properties.filter(
-    (prop): prop is TSESTree.Property => prop.type === 'Property' && isSpecialProperty(getStyleKeyName(prop.key)),
-  );
-
-  const allSpecialPropertiesEmpty = specialProperties.every((property) => {
-    if (property.value.type === 'ObjectExpression' && isEmptyObject(property.value)) {
-      return true;
+  // For regular style objects, check if all properties are effectively empty
+  return stylesObject.properties.every((property) => {
+    if (property.type !== 'Property') {
+      return true; // Skip spread elements for emptiness check
     }
 
     const propertyName = getStyleKeyName(property.key);
-    // This defensive check handles malformed AST nodes that lack valid property names.
-    // This is difficult to test because it's challenging to construct a valid AST
-    // where getStyleKeyName would return a falsy value.
     if (!propertyName) {
-      return false;
+      return true; // Skip properties we can't identify
     }
 
-    // For selectors, media queries and supports, check if all nested objects are empty
-    if (
-      (propertyName === 'selectors' || (propertyName && propertyName.startsWith('@'))) &&
-      property.value.type === 'ObjectExpression'
-    ) {
-      // This handles the edge case of an empty properties array.
-      // This code path is difficult to test in isolation because it requires
-      // constructing a specific AST structure that bypasses earlier conditions.
-      if (property.value.properties.length === 0) {
-        return true;
+    // Handle special nested objects like selectors, media queries, supports
+    if (propertyName === 'selectors' || propertyName.startsWith('@')) {
+      if (property.value.type === 'ObjectExpression') {
+        return isNestedObjectEmpty(property.value);
       }
-
-      return property.value.properties.every((nestedProperty) => {
-        return (
-          nestedProperty.type === 'Property' &&
-          nestedProperty.value.type === 'ObjectExpression' &&
-          isEmptyObject(nestedProperty.value)
-        );
-      });
+      return false; // Non-object values in these properties
     }
 
-    // Default fallback for cases not handled by the conditions above.
-    // This is difficult to test because it requires creating an AST structure
-    // that doesn't trigger any of the preceding return statements.
-    return false;
-  });
+    // Handle regular CSS properties
+    if (property.value.type === 'ObjectExpression') {
+      return isEmptyObject(property.value);
+    }
 
-  // If we have special properties and they're all empty, the style is effectively empty
-  return specialProperties.length > 0 && allSpecialPropertiesEmpty;
+    return false; // Non-empty property (literal values, etc.)
+  });
 };
 
 /**
- * Creates ESLint rule visitors for detecting empty style blocks in vanilla-extract.
- * @param ruleContext The ESLint rule rule context.
- * @returns An object with visitor functions for the ESLint rule.
+ * Creates ESLint rule visitors for detecting empty style blocks using reference tracking.
+ * This automatically detects vanilla-extract functions based on their import statements.
  */
 export const createEmptyStyleVisitors = (ruleContext: Rule.RuleContext): Rule.RuleListener => {
-  // Track reported nodes to prevent duplicate reports
+  const tracker = new ReferenceTracker();
+  const trackingVisitor = createReferenceTrackingVisitor(tracker);
   const reportedNodes = new Set<TSESTree.ObjectExpression>();
 
   return {
+    // Include the reference tracking visitors
+    ...trackingVisitor,
+
     CallExpression(node) {
       if (node.callee.type !== 'Identifier') {
         return;
       }
 
-      // Target vanilla-extract style functions
-      const styleApiFunctions = [
-        'style',
-        'styleVariants',
-        'recipe',
-        'globalStyle',
-        'fontFace',
-        'globalFontFace',
-        'keyframes',
-        'globalKeyframes',
-      ];
+      const functionName = node.callee.name;
 
-      if (!styleApiFunctions.includes(node.callee.name) || node.arguments.length === 0) {
+      // Check if this function is tracked as a vanilla-extract function
+      if (!tracker.isTrackedFunction(functionName)) {
+        return;
+      }
+
+      const originalName = tracker.getOriginalName(functionName);
+      const wrapperInfo = tracker.getWrapperInfo(functionName);
+
+      if (!originalName || node.arguments.length === 0) {
         return;
       }
 
       // Handle styleVariants specifically
-      if (node.callee.name === 'styleVariants' && node.arguments[0]?.type === 'ObjectExpression') {
-        processStyleVariants(ruleContext, node.arguments[0] as TSESTree.ObjectExpression, reportedNodes);
+      if (originalName === 'styleVariants') {
+        // For wrapper functions, use the correct parameter index
+        const styleArgumentIndex = wrapperInfo?.parameterMapping ?? 0;
+        if (node.arguments.length <= styleArgumentIndex) {
+          return;
+        }
 
-        // If the entire styleVariants object is empty after processing, remove the declaration
-        if (isEmptyObject(node.arguments[0] as TSESTree.ObjectExpression)) {
-          reportEmptyDeclaration(ruleContext, node.arguments[0] as TSESTree.Node, node as TSESTree.CallExpression);
+        if (node.arguments[styleArgumentIndex]?.type === 'ObjectExpression') {
+          processStyleVariants(
+            ruleContext,
+            node.arguments[styleArgumentIndex] as TSESTree.ObjectExpression,
+            reportedNodes,
+          );
+
+          // If the entire styleVariants object is empty after processing, remove the declaration
+          if (isEmptyObject(node.arguments[styleArgumentIndex] as TSESTree.ObjectExpression)) {
+            reportEmptyDeclaration(
+              ruleContext,
+              node.arguments[styleArgumentIndex] as TSESTree.Node,
+              node as TSESTree.CallExpression,
+            );
+          }
         }
         return;
       }
 
-      const defaultStyleArgumentIndex = 0;
-      const globalFunctionNames = ['globalStyle', 'globalFontFace', 'globalKeyframes'];
-      // Determine the style argument index based on the function name
-      const styleArgumentIndex = globalFunctionNames.includes(node.callee.name) ? 1 : defaultStyleArgumentIndex;
+      // Determine the style argument index based on the original function name and wrapper info
+      let styleArgumentIndex: number;
+      if (wrapperInfo) {
+        // Use wrapper function parameter mapping
+        styleArgumentIndex = wrapperInfo.parameterMapping;
+      } else {
+        // Use original logic for direct vanilla-extract calls
+        styleArgumentIndex =
+          originalName === 'globalStyle' || originalName === 'globalKeyframes' || originalName === 'globalFontFace'
+            ? 1
+            : 0;
+      }
 
       // For global functions, check if we have enough arguments
-      if (styleArgumentIndex === 1 && node.arguments.length <= styleArgumentIndex) {
+      if (
+        (originalName === 'globalStyle' || originalName === 'globalKeyframes' || originalName === 'globalFontFace') &&
+        node.arguments.length <= styleArgumentIndex
+      ) {
+        return;
+      }
+
+      // For wrapper functions, ensure we have enough arguments
+      if (wrapperInfo && node.arguments.length <= styleArgumentIndex) {
         return;
       }
 
       const styleArgument = node.arguments[styleArgumentIndex];
 
       // This defensive check prevents duplicate processing of nodes.
-      // This code path's difficult to test because the ESLint visitor pattern
-      // typically ensures each node is only visited once per rule execution.
       if (reportedNodes.has(styleArgument as TSESTree.ObjectExpression)) {
         return;
       }
@@ -189,15 +213,29 @@ export const createEmptyStyleVisitors = (ruleContext: Rule.RuleContext): Rule.Ru
       }
 
       // For recipe - check if entire recipe is effectively empty
-      if (node.callee.name === 'recipe' && styleArgument?.type === 'ObjectExpression') {
-        if (isEffectivelyEmptyStylesObject(styleArgument as TSESTree.ObjectExpression)) {
+      if (originalName === 'recipe') {
+        if (styleArgument?.type === 'ObjectExpression') {
+          if (isEffectivelyEmptyStylesObject(styleArgument as TSESTree.ObjectExpression)) {
+            reportedNodes.add(styleArgument as TSESTree.ObjectExpression);
+            reportEmptyDeclaration(ruleContext, styleArgument as TSESTree.Node, node as TSESTree.CallExpression);
+            return;
+          }
+
+          // Process individual properties in recipe
+          processRecipeProperties(ruleContext, styleArgument as TSESTree.ObjectExpression, reportedNodes);
+        }
+        return;
+      }
+
+      // Handle fontFace functions - both fontFace and globalFontFace need empty object checks
+      if (originalName === 'fontFace' || originalName === 'globalFontFace') {
+        // Direct empty object case - remove the entire declaration
+        if (styleArgument?.type === 'ObjectExpression' && isEmptyObject(styleArgument as TSESTree.ObjectExpression)) {
           reportedNodes.add(styleArgument as TSESTree.ObjectExpression);
           reportEmptyDeclaration(ruleContext, styleArgument as TSESTree.Node, node as TSESTree.CallExpression);
           return;
         }
-
-        // Process individual properties in recipe
-        processRecipeProperties(ruleContext, styleArgument as TSESTree.ObjectExpression, reportedNodes);
+        return;
       }
 
       // For style objects with nested empty objects
@@ -214,7 +252,10 @@ export const createEmptyStyleVisitors = (ruleContext: Rule.RuleContext): Rule.Ru
               node: property.argument as Rule.Node,
               messageId: 'emptySpreadObject',
               fix(fixer) {
-                return removeNodeWithComma(ruleContext, property as TSESTree.Node, fixer);
+                if (property.range) {
+                  return fixer.removeRange([property.range[0], property.range[1]]);
+                }
+                return null;
               },
             });
           }

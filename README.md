@@ -27,6 +27,8 @@ ordering option based on groups available in [concentric CSS](src/css-rules/conc
 - Handles complex cases like nested objects, arrays of styles, and pseudo selectors
 - Works with camelCase properties as used in vanilla-extract
 - Additional linting rules for enhanced code quality (see roadmap for upcoming features)
+- Automatic wrapper function detection - works with custom wrapper functions that call vanilla-extract APIs, using
+  reference tracking to apply all rules regardless of how vanilla-extract functions are wrapped
 
 ## Requirements
 

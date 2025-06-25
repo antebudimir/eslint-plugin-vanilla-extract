@@ -55,9 +55,18 @@ describe('isEffectivelyEmptyStylesObject', () => {
     parent: null as unknown as TSESTree.Node,
   });
 
-  it('should return true for an object with empty selectors, media, or supports objects', () => {
+  it('should return false for an object with real CSS properties and empty nested objects', () => {
     const object = createObjectExpression([
       createProperty('color', createLiteral('blue')),
+      createProperty('selectors', createObjectExpression([])),
+      createProperty('@media', createObjectExpression([])),
+      createProperty('@supports', createObjectExpression([])),
+    ]);
+    expect(isEffectivelyEmptyStylesObject(object)).toBe(false);
+  });
+
+  it('should return true for an object with only empty nested objects', () => {
+    const object = createObjectExpression([
       createProperty('selectors', createObjectExpression([])),
       createProperty('@media', createObjectExpression([])),
       createProperty('@supports', createObjectExpression([])),
