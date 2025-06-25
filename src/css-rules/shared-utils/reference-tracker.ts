@@ -10,7 +10,6 @@ export interface ImportReference {
 export interface WrapperFunctionInfo {
   originalFunction: string; // 'style', 'recipe', etc.
   parameterMapping: number; // which parameter index contains the style object
-  objectPath?: string[]; // path to the style object within the parameter (e.g., ['@layer', 'componentLayer'])
 }
 
 export interface TrackedFunctions {
