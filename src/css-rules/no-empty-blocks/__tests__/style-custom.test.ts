@@ -301,33 +301,5 @@ run({
   `,
       errors: [{ messageId: 'emptyStyleDeclaration' }],
     },
-
-    // Variable declaration with empty style
-    // {
-    //   code: `
-    //     import { style } from '@vanilla-extract/css';
-
-    //     export const layerStyle = (
-    //       layer: 'reset' | 'theme' | 'component' | 'utilities',
-    //       rule: StyleRule,
-    //       debugId?: string,
-    //     ) =>
-    //       style(
-    //           {
-    //               '@layer': {
-    //                   [layerMap[layer]]: rule,
-    //               },
-    //           },
-    //           debugId,
-    //       );
-
-    //     const { className } = layerStyle('component', {});
-    //   `,
-    //   errors: [{ messageId: 'emptyStyleDeclaration' }],
-    //   output: `
-    //     import { style } from '@vanilla-extract/css';
-
-    //   `,
-    // },
   ],
 });
