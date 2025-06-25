@@ -1,10 +1,10 @@
 import tsParser from '@typescript-eslint/parser';
 import { run } from 'eslint-vitest-rule-tester';
-import noEmptyBlocksRule from '../rule-definition.js';
+import noEmptyStyleBlocksRule from '../rule-definition.js';
 
 run({
   name: 'vanilla-extract/no-empty-blocks/style-custom',
-  rule: noEmptyBlocksRule,
+  rule: noEmptyStyleBlocksRule,
   languageOptions: {
     parser: tsParser,
     parserOptions: {
