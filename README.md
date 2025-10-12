@@ -5,6 +5,16 @@
 [![npm version](https://img.shields.io/npm/v/@antebudimir/eslint-plugin-vanilla-extract.svg)](https://www.npmjs.com/package/@antebudimir/eslint-plugin-vanilla-extract)
 ![NPM Downloads](https://img.shields.io/npm/d18m/%40antebudimir%2Feslint-plugin-vanilla-extract)
 
+---
+
+**Maintaining this plugin takes time and care! If you find it valuable, please consider supporting its development:**  
+💖 GitHub Sponsors: <https://github.com/sponsors/antebudimir>  
+☕ Ko-fi: <https://ko-fi.com/antebudimir>  
+💸 Revolut: <https://revolut.me/antebudimir>  
+🟡 Liberapay: <https://liberapay.com/antebudimir>  
+
+---
+
 An ESLint plugin for enforcing best practices in
 [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) CSS styles, including CSS property ordering
 and additional linting rules. Available presets are for alphabetical and
