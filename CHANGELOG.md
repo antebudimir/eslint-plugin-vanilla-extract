@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.1] - 2025-10-15
+
+- Improve README structure and clarity
+  - Add "Important: Only Enable One Ordering Rule at a Time" section after configuration options
+  - Clarify that both `extends` and `plugins` approaches support rule customization
+  - Update "Recommended Configuration" section to list all 6 available rules (4 enabled by default, 2 alternatives)
+  - Add clear examples for switching between ordering rules
+- Add warning about conflicting auto-fixes when multiple ordering rules are enabled simultaneously
+- Clarify that users must explicitly disable the default ordering rule when switching to a different one
+
 ## [1.11.0] - 2025-06-25
 
 - add reference tracking for wrapper functions in vanilla-extract style objects

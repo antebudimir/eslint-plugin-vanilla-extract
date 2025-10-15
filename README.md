@@ -77,7 +77,7 @@ There are two main ways to configure this plugin in your ESLint flat config:
 
 ### Option 1: Using extends (recommended, available from v1.10.0)
 
-The simplest way to apply the recommended ruleset:
+The simplest and most concise way to apply the recommended ruleset:
 
 ```typescript
 import { defineConfig } from 'eslint/config';
@@ -88,13 +88,18 @@ export default defineConfig([
     files: ['**/*.css.ts'],
     ignores: ['src/**/theme-contract.css.ts'],
     extends: [vanillaExtract.configs.recommended],
+    // You can still override rules when using extends
+    // rules: {
+    //   'vanilla-extract/concentric-order': 'off',
+    //   'vanilla-extract/alphabetical-order': 'error',
+    // },
   },
 ];
 ```
 
-### Option 2: Using plugins with explicit rule configuration
+### Option 2: Using plugins with explicit rule spreading
 
-This approach gives you more control over individual rules:
+This approach is more explicit - you manually register the plugin and spread the recommended rules:
 
 ```typescript
 import { defineConfig } from 'eslint/config';
@@ -116,12 +121,63 @@ export default defineConfig([
       // 'vanilla-extract/no-empty-style-blocks': 'off', // Disable a recommended rule
       // 'vanilla-extract/no-zero-unit': 'warn', // Change severity from error to warn
 
-      // Add additional rules not in recommended config
-      // 'vanilla-extract/alphabetical-order': 'error', // Override concentric-order rule
+      // Switch to a different ordering rule (see "Important" section below)
+      // 'vanilla-extract/concentric-order': 'off',
+      // 'vanilla-extract/alphabetical-order': 'error',
     },
   },
 ];
 ```
+
+#### Important: Only Enable One Ordering Rule at a Time
+
+The plugin includes three CSS property ordering rules: `alphabetical-order`, `concentric-order`, and `custom-order`. **Only one ordering rule should be enabled at a time** to avoid conflicting auto-fixes.
+
+If you want to use a different ordering rule than the one in the recommended config, you must explicitly disable the default rule.
+
+##### Example: Switching from concentric to alphabetical ordering
+
+```typescript
+export default [
+  {
+    files: ['**/*.css.ts'],
+    plugins: {
+      'vanilla-extract': vanillaExtract,
+    },
+    rules: {
+      ...vanillaExtract.configs.recommended.rules,
+      'vanilla-extract/concentric-order': 'off',      // Disable the default
+      'vanilla-extract/alphabetical-order': 'error',  // Enable alphabetical
+    },
+  },
+];
+```
+
+##### Example: Using custom-order instead of the recommended concentric-order
+
+```typescript
+export default [
+  {
+    files: ['**/*.css.ts'],
+    plugins: {
+      'vanilla-extract': vanillaExtract,
+    },
+    rules: {
+      ...vanillaExtract.configs.recommended.rules,
+      'vanilla-extract/concentric-order': 'off',  // Disable the default
+      'vanilla-extract/custom-order': [
+        'error',
+        {
+          groupOrder: ['font', 'dimensions', 'margin', 'padding', 'position', 'border'],
+          sortRemainingProperties: 'alphabetical',
+        },
+      ],
+    },
+  },
+];
+```
+
+> **⚠️ Warning:** If multiple ordering rules are enabled simultaneously, they will produce conflicting auto-fixes that ESLint cannot apply, causing auto-fix on save to fail. Always ensure only one ordering rule is active.
 
 ### Using with FlatCompat (for ESLint 8.57.0 & 8.57.1)
 
@@ -203,10 +259,15 @@ The recommended configuration enables the following rules with error severity:
 
 - `vanilla-extract/concentric-order`: Enforces concentric CSS property ordering
 - `vanilla-extract/no-empty-style-blocks`: Prevents empty style blocks
-- `vanilla-extract/no-unknown-unit`: prohibits usage of unrecognized CSS units.
-- `vanilla-extract/no-zero-unit`: removes unnecessary units for zero values
+- `vanilla-extract/no-unknown-unit`: Prohibits usage of unrecognized CSS units
+- `vanilla-extract/no-zero-unit`: Removes unnecessary units for zero values
 
-You can use the recommended configuration as a starting point and override rules as needed for your project.
+**Additional rules available** (not enabled by default):
+
+- `vanilla-extract/alphabetical-order`: Alternative ordering rule (alphabetical sorting)
+- `vanilla-extract/custom-order`: Alternative ordering rule (custom group-based sorting)
+
+You can use the recommended configuration as a starting point and override rules as needed for your project. See the configuration examples above for how to switch between ordering rules.
 
 ### Custom Configuration
 
@@ -239,6 +300,8 @@ export default [
   },
 ];
 ```
+
+> **Note:** Remember to enable only one ordering rule at a time. See the "Important" section above for details on switching between ordering rules.
 
 ## Rules
 

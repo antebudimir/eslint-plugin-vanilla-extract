@@ -8,7 +8,7 @@ import noZeroUnitRule from './css-rules/no-zero-unit/rule-definition.js';
 const vanillaExtract = {
   meta: {
     name: '@antebudimir/eslint-plugin-vanilla-extract',
-    version: '1.11.0',
+    version: '1.11.1',
   },
   rules: {
     'alphabetical-order': alphabeticalOrderRule,
