@@ -259,6 +259,7 @@ The recommended configuration enables the following rules with error severity:
 
 - `vanilla-extract/concentric-order`: Enforces concentric CSS property ordering
 - `vanilla-extract/no-empty-style-blocks`: Prevents empty style blocks
+- `vanilla-extract/no-trailing-zero`: Disallows trailing zeros in numeric CSS values
 - `vanilla-extract/no-unknown-unit`: Prohibits usage of unrecognized CSS units
 - `vanilla-extract/no-zero-unit`: Removes unnecessary units for zero values
 
@@ -464,6 +465,37 @@ export const recipeWithEmptyVariants = recipe({
 });
 ```
 
+## vanilla-extract/no-trailing-zero
+
+This rule disallows trailing zeros in numeric CSS values within vanilla-extract style objects. It helps maintain cleaner
+and more consistent CSS by removing unnecessary trailing zeros from decimal numbers.
+
+```typescript
+// ❌ Incorrect
+import { style } from '@vanilla-extract/css';
+
+export const myStyle = style({
+  margin: '1.0px',
+  padding: '2.50rem',
+  opacity: 1.0,
+  lineHeight: 2.50,
+  width: '0.0em',
+  transition: 'all 0.30s ease',
+});
+
+// ✅ Correct
+import { style } from '@vanilla-extract/css';
+
+export const myStyle = style({
+  margin: '1px',
+  padding: '2.5rem',
+  opacity: 1,
+  lineHeight: 2.5,
+  width: '0',
+  transition: 'all 0.3s ease',
+});
+```
+
 ## vanilla-extract/no-unknown-unit
 
 This rule enforces the use of valid CSS units in vanilla-extract style objects. It prevents typos and non-standard units
@@ -612,17 +644,17 @@ The roadmap outlines the project's current status and future plans:
 - Recommended ESLint configuration for the plugin.
 - `no-zero-unit` rule to disallow units when the value is zero.
 - `no-unknown-unit` rule to disallow unknown units.
-- Support for using the plugin’s recommended config via the extends field (as discussed in
+- `no-trailing-zero` rule to disallow trailing zeros in numbers.
+- Support for using the plugin's recommended config via the extends field (as discussed in
   [issue #3](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/3))
 - Comprehensive rule testing.
 
 ### Current Work
 
-- `no-number-trailing-zero` rule to disallow trailing zeros in numbers.
+- `no-px-unit` rule to disallow use of `px` units with configurable whitelist.
 
 ### Upcoming Features
 
-- `no-px-unit` rule to disallow use of `px` units with configurable whitelist.
 - `prefer-logical-properties` rule to enforce use of logical properties.
 - `prefer-theme-tokens` rule to enforce use of theme tokens instead of hard-coded values when available.
 - `no-global-style` rule to disallow use of `globalStyle` function.

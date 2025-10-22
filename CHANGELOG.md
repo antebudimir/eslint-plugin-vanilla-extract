@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2025-10-22
+
+- Add new rule `no-trailing-zero` that flags and fixes unnecessary trailing zeros in numeric values
+- Handles various CSS units, negative numbers, and decimal values
+- Preserves non-trailing zeros in numbers like 11.01rem and 2.05em
+- Includes comprehensive test coverage for edge cases
+
 ## [1.11.1] - 2025-10-15
 
 - Improve README structure and clarity
