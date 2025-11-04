@@ -15,11 +15,7 @@
 
 ---
 
-An ESLint plugin for enforcing best practices in
-[vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) CSS styles, including CSS property ordering
-and additional linting rules. Available presets are for alphabetical and
-[concentric](https://rhodesmill.org/brandon/2011/concentric-css/) CSS ordering. The plugin also supports a custom group
-ordering option based on groups available in [concentric CSS](src/css-rules/concentric-order/concentric-groups.ts).
+Comprehensive ESLint plugin for vanilla-extract that enforces best practices in [vanilla-extract](https://github.com/vanilla-extract-css/vanilla-extract) CSS styles. Includes support for CSS property ordering (alphabetical, [concentric](https://rhodesmill.org/brandon/2011/concentric-css/), and custom group ordering), advanced style linting rules, auto-fixing, and validation of style patterns specific to vanilla-extract. Ensures zero-runtime safety and integrates with multiple vanilla-extract APIs to promote maintainable, consistent code across projects
 
 ## Demo
 
@@ -257,7 +253,7 @@ For VS Code users, add these settings to your `.vscode/settings.json`:
 
 The recommended configuration enables the following rules with error severity:
 
-- `vanilla-extract/concentric-order`: Enforces concentric CSS property ordering
+- `vanilla-extract/concentric-order`: Enforces [concentric CSS](#concentric-css-model) property ordering
 - `vanilla-extract/no-empty-style-blocks`: Prevents empty style blocks
 - `vanilla-extract/no-trailing-zero`: Disallows trailing zeros in numeric CSS values
 - `vanilla-extract/no-unknown-unit`: Prohibits usage of unrecognized CSS units
@@ -267,6 +263,7 @@ The recommended configuration enables the following rules with error severity:
 
 - `vanilla-extract/alphabetical-order`: Alternative ordering rule (alphabetical sorting)
 - `vanilla-extract/custom-order`: Alternative ordering rule (custom group-based sorting)
+- `vanilla-extract/no-px-unit`: Disallows px units with an optional allowlist
 
 You can use the recommended configuration as a starting point and override rules as needed for your project. See the configuration examples above for how to switch between ordering rules.
 
@@ -338,8 +335,7 @@ export const myStyle = style({
 
 ### vanilla-extract/concentric-order
 
-This rule enforces that CSS properties in vanilla-extract style objects follow the concentric CSS ordering pattern,
-which organizes properties from outside to inside.
+This rule enforces that CSS properties in vanilla-extract style objects follow the [concentric CSS](#concentric-css-model) ordering pattern, which organizes properties from outside to inside.
 
 ```typescript
 // ❌ Incorrect
@@ -369,7 +365,7 @@ export const myStyle = style({
 
 The `vanilla-extract/custom-order` rule enables you to enforce a custom ordering of CSS properties in your
 vanilla-extract styles. You can specify an array of property groups in your preferred order, and the rule will ensure
-that properties within these groups are sorted according to their position in the concentric CSS model.
+that properties within these groups are sorted according to their position in the [concentric CSS model](https://rhodesmill.org/brandon/2011/concentric-css/).
 
 Key features of this rule include:
 
@@ -465,7 +461,49 @@ export const recipeWithEmptyVariants = recipe({
 });
 ```
 
-## vanilla-extract/no-trailing-zero
+### vanilla-extract/no-px-unit
+
+This rule disallows the use of hard-coded `px` units in vanilla-extract style declarations. Prefer `rem`, `em`, or theme tokens. A configurable allowlist lets you permit specific properties to use `px` where necessary. Allowlist supports both camelCase and kebab-case property names.
+
+Configuration with an allowlist:
+
+```json
+{
+  "rules": {
+    "vanilla-extract/no-px-unit": ["error", { "allow": ["borderWidth", "outline-offset"] }]
+  }
+}
+```
+
+Before:
+
+```typescript
+import { style } from '@vanilla-extract/css';
+
+export const box = style({
+  marginTop: '8px',
+  padding: '16px',
+  selectors: {
+    '&:hover': { gap: '4px' },
+  },
+});
+```
+
+After (suggested fix shown using rem):
+
+```typescript
+import { style } from '@vanilla-extract/css';
+
+export const box = style({
+  marginTop: '8rem',
+  padding: '16rem',
+  selectors: {
+    '&:hover': { gap: '4rem' },
+  },
+});
+```
+
+### vanilla-extract/no-trailing-zero
 
 This rule disallows trailing zeros in numeric CSS values within vanilla-extract style objects. It helps maintain cleaner
 and more consistent CSS by removing unnecessary trailing zeros from decimal numbers.
@@ -496,7 +534,7 @@ export const myStyle = style({
 });
 ```
 
-## vanilla-extract/no-unknown-unit
+### vanilla-extract/no-unknown-unit
 
 This rule enforces the use of valid CSS units in vanilla-extract style objects. It prevents typos and non-standard units
 that could cause styling issues or browser compatibility problems.
@@ -535,7 +573,7 @@ export const myRecipe = recipe({
 });
 ```
 
-## vanilla-extract/no-zero-unit
+### vanilla-extract/no-zero-unit
 
 This rule enforces the removal of unnecessary units for zero values in vanilla-extract style objects. It helps maintain
 cleaner and more consistent CSS by eliminating redundant units when the value is zero.
@@ -648,10 +686,11 @@ The roadmap outlines the project's current status and future plans:
 - Support for using the plugin's recommended config via the extends field (as discussed in
   [issue #3](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/3))
 - Comprehensive rule testing.
+- `no-px-unit` rule to disallow use of `px` units with configurable whitelist.
 
 ### Current Work
 
-- `no-px-unit` rule to disallow use of `px` units with configurable whitelist.
+- TBA
 
 ### Upcoming Features
 
