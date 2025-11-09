@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2025-11-09
+
+- Add new rule `prefer-logical-properties` that enforces logical CSS properties over physical directional properties
+- Detects 140+ physical property mappings across margin, padding, border, inset, size, overflow, and scroll properties
+- Supports value-based detection for `text-align`, `float`, `clear`, and `resize` properties
+- Provides automatic fixes for all detected violations
+- Preserves original formatting (camelCase/kebab-case and quote style)
+- Configurable allowlist via `allow` option to skip specific properties
+- Comprehensive test coverage
+
 ## [1.13.0] - 2025-11-04
 
 - Add new rule `no-px-unit` that disallows `px` units in vanilla-extract styles with an allowlist option

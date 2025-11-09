@@ -264,6 +264,7 @@ The recommended configuration enables the following rules with error severity:
 - `vanilla-extract/alphabetical-order`: Alternative ordering rule (alphabetical sorting)
 - `vanilla-extract/custom-order`: Alternative ordering rule (custom group-based sorting)
 - `vanilla-extract/no-px-unit`: Disallows px units with an optional allowlist
+- `vanilla-extract/prefer-logical-properties`: Enforces logical CSS properties over physical directional properties
 
 You can use the recommended configuration as a starting point and override rules as needed for your project. See the configuration examples above for how to switch between ordering rules.
 
@@ -602,6 +603,43 @@ export const myStyle = style({
 });
 ```
 
+### vanilla-extract/prefer-logical-properties
+
+This rule enforces the use of CSS logical properties instead of physical (directional) properties in vanilla-extract style declarations. Logical properties adapt to different writing directions (LTR/RTL) and writing modes, making your styles more internationalization-friendly. Supports 140+ property mappings across margin, padding, border, inset, size, overflow, and scroll properties. Configurable allowlist lets you permit specific properties via the `allow` option (supports both camelCase and kebab-case).
+
+Configuration with an allowlist:
+
+```json
+{
+  "rules": {
+    "vanilla-extract/prefer-logical-properties": ["error", { "allow": ["top", "left"] }]
+  }
+}
+```
+
+```typescript
+// ❌ Incorrect
+import { style } from '@vanilla-extract/css';
+
+export const box = style({
+  marginLeft: '1rem',
+  paddingTop: '2rem',
+  width: '100%',
+  borderRight: '1px solid',
+  textAlign: 'left',
+});
+
+// ✅ Correct
+import { style } from '@vanilla-extract/css';
+
+export const box = style({
+  marginInlineStart: '1rem',
+  paddingBlockStart: '2rem',
+  inlineSize: '100%',
+  borderInlineEnd: '1px solid',
+  textAlign: 'start',
+});
+
 ## Font Face Declarations
 
 For `fontFace` and `globalFontFace` API calls, all three ordering rules (alphabetical, concentric, and custom) enforce
@@ -694,7 +732,6 @@ The roadmap outlines the project's current status and future plans:
 
 ### Upcoming Features
 
-- `prefer-logical-properties` rule to enforce use of logical properties.
 - `prefer-theme-tokens` rule to enforce use of theme tokens instead of hard-coded values when available.
 - `no-global-style` rule to disallow use of `globalStyle` function.
 - `property-unit-match` rule to enforce valid units per CSS property specs. **Note**: This feature will only be
