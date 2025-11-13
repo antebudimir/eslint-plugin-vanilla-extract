@@ -265,6 +265,7 @@ The recommended configuration enables the following rules with error severity:
 - `vanilla-extract/custom-order`: Alternative ordering rule (custom group-based sorting)
 - `vanilla-extract/no-px-unit`: Disallows px units with an optional allowlist
 - `vanilla-extract/prefer-logical-properties`: Enforces logical CSS properties over physical directional properties
+- `vanilla-extract/prefer-theme-tokens`: Enforces theme tokens instead of hard-coded values for colors, spacing, font sizes, border radius, border widths, shadows, z-index, opacity, font weights, and transitions/animations (optionally evaluates helper functions and template literals)
 
 You can use the recommended configuration as a starting point and override rules as needed for your project. See the configuration examples above for how to switch between ordering rules.
 
@@ -639,6 +640,109 @@ export const box = style({
   borderInlineEnd: '1px solid',
   textAlign: 'start',
 });
+```
+
+### vanilla-extract/prefer-theme-tokens
+
+Enforces theme tokens instead of hard-coded CSS values. Analyzes your theme contract files and suggests **specific tokens** when matches are found.
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `themeContracts` | `string[]` | `[]` | Theme contract file paths (relative to project root or absolute) |
+| `checkColors` | `boolean` | `true` | Check colors (hex, rgb, hsl, named) |
+| `checkSpacing` | `boolean` | `true` | Check spacing (margin, padding, gap, width, height) |
+| `checkFontSizes` | `boolean` | `true` | Check font sizes (fontSize, lineHeight) |
+| `checkBorderRadius` | `boolean` | `true` | Check border radius values |
+| `checkBorderWidths` | `boolean` | `true` | Check border widths (including `border` shorthand) |
+| `checkShadows` | `boolean` | `true` | Check shadows (boxShadow, textShadow, filter) |
+| `checkZIndex` | `boolean` | `true` | Check z-index values |
+| `checkOpacity` | `boolean` | `true` | Check opacity values |
+| `checkFontWeights` | `boolean` | `true` | Check font weights (numeric and named) |
+| `checkTransitions` | `boolean` | `true` | Check transitions and animations |
+| `allowedValues` | `string[]` | `[]` | Whitelist specific values (e.g., `["0", "auto", "100vh"]`) |
+| `allowedProperties` | `string[]` | `[]` | Skip checking specific properties |
+| `autoFix` | `boolean` | `false` | Auto-fix when exactly one token matches |
+| `remBase` | `number` | `16` | Base font size for `rem()` calculations |
+| `checkHelperFunctions` | `boolean` | `false` | Check helper calls like `rem(48)`, `` `${rem(4)}` `` |
+
+**Example:**
+
+```json
+{
+  "rules": {
+    "vanilla-extract/prefer-theme-tokens": ["error", {
+      "themeContracts": ["./src/theme.css.ts"],
+      "checkColors": true,
+      "checkSpacing": true,
+      "allowedValues": ["0", "auto", "100%"],
+      "allowedProperties": ["borderWidth"],
+      "autoFix": false,
+      "checkHelperFunctions": false
+    }]
+  }
+}
+```
+
+**How it works:**
+
+1. **Analyzes theme contracts** - Reads your theme files and evaluates computed values:
+   - `rem(16)` → `"1rem"`
+   - `` `${rem(4)} ${rem(8)}` `` → `"0.25rem 0.5rem"`
+   - Arithmetic expressions
+
+2. **Detects hard-coded values** - Checks literals, numbers, and (optionally) helper functions:
+
+   ```typescript
+   color: '#0055FF'           // ❌ Always flagged
+   padding: '16px'            // ❌ Always flagged
+   opacity: 0.5               // ❌ Always flagged (numeric literal)
+   margin: rem(48)            // ❌ Only with checkHelperFunctions: true
+   boxShadow: `${rem(4)}...`  // ❌ Only with checkHelperFunctions: true
+   ```
+
+3. **Suggests specific tokens** - Matches values to theme tokens:
+
+   ```text
+   ❌ Hard-coded color '#0055FF'. Use theme token: vars.colors.brand
+   ❌ Hard-coded padding '16px'. Use theme token: vars.spacing.md
+   ```
+
+   - **Single match**: Shows one suggestion + auto-fix (if enabled)
+   - **Multiple matches**: Shows all as quick-fix options
+
+**Theme contract example:**
+
+```typescript
+// theme.css.ts
+export const [themeClass, vars] = createTheme({
+  colors: { brand: '#0055FF', text: '#1f2937' },
+  spacing: { sm: '8px', md: '16px' },
+});
+
+// styles.css.ts
+export const button = style({
+  backgroundColor: '#0055FF',  // ❌ Use vars.colors.brand
+  padding: '8px',              // ❌ Use vars.spacing.sm
+});
+```
+
+**Helper function detection:**
+
+By default, only checks **literals**. Enable `checkHelperFunctions: true` to also check computed values:
+
+```typescript
+// checkHelperFunctions: false (default)
+padding: rem(48)   // ✅ Not flagged
+padding: '3rem'    // ❌ Flagged
+
+// checkHelperFunctions: true
+padding: rem(48)   // ❌ Flagged if theme has matching token
+padding: '3rem'    // ❌ Flagged if theme has matching token
+```
+
+**Note:** Opt-in rule (not in recommended config). Enable when ready to enforce design tokens.
 
 ## Font Face Declarations
 
@@ -726,14 +830,14 @@ The roadmap outlines the project's current status and future plans:
 - Comprehensive rule testing.
 - `no-px-unit` rule to disallow use of `px` units with configurable whitelist.
 - `prefer-logical-properties` rule to enforce use of logical properties.
+- `prefer-theme-tokens` rule to enforce theme tokens instead of hard-coded values for colors, spacing, font sizes, border radius, border widths, shadows, z-index, opacity, font weights, and transitions/animations (optionally evaluates helper functions and template literals).
 
 ### Current Work
 
-- `prefer-theme-tokens` rule to enforce use of theme tokens instead of hard-coded values when available.
+- `no-unitless-values` rule that disallows numeric literals for CSS properties that are not unitless in CSS.
 
 ### Upcoming Features
 
-- `no-unitless-values` rule that disallows numeric literals for CSS properties that are not unitless in CSS.
 - `property-unit-match` rule to enforce valid units per CSS property specs. **Note**: This feature will only be
   implemented if there's sufficient interest from the community.
 - Option to sort properties within user-defined concentric groups alphabetically instead of following the concentric

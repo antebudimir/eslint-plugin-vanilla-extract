@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2025-11-14
+
+- Add new rule `prefer-theme-tokens`that requires theme tokens instead of hard-coded values in vanilla-extract styles
+  - Detects hard-coded values across colors, spacing, font sizes, border radius/widths, shadows, z-index, opacity, font weights, and transitions
+  - Provides suggestions from configured theme contracts; optional auto-fix for unambiguous replacements
+  - Supports nested objects, media queries, selectors, and (optionally) template literals/helper calls
+  - Configurable via `themeContracts`, category toggles, `allowedValues`, `allowedProperties`, `autoFix`, `remBase`, `checkHelperFunctions` (see README for details)
+
 ## [1.14.0] - 2025-11-09
 
 - Add new rule `prefer-logical-properties` that enforces logical CSS properties over physical directional properties

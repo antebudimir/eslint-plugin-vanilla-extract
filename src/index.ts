@@ -7,11 +7,12 @@ import noTrailingZeroRule from './css-rules/no-trailing-zero/rule-definition.js'
 import noUnknownUnitRule from './css-rules/no-unknown-unit/rule-definition.js';
 import noZeroUnitRule from './css-rules/no-zero-unit/rule-definition.js';
 import preferLogicalPropertiesRule from './css-rules/prefer-logical-properties/index.js';
+import preferThemeTokensRule from './css-rules/prefer-theme-tokens/index.js';
 
 const vanillaExtract = {
   meta: {
     name: '@antebudimir/eslint-plugin-vanilla-extract',
-    version: '1.14.0',
+    version: '1.15.0',
   },
   rules: {
     'alphabetical-order': alphabeticalOrderRule,
@@ -23,6 +24,7 @@ const vanillaExtract = {
     'no-unknown-unit': noUnknownUnitRule,
     'no-zero-unit': noZeroUnitRule,
     'prefer-logical-properties': preferLogicalPropertiesRule,
+    'prefer-theme-tokens': preferThemeTokensRule,
   },
   configs: {},
 };
