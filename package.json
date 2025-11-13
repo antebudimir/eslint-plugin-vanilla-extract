@@ -1,6 +1,6 @@
 {
   "name": "@antebudimir/eslint-plugin-vanilla-extract",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "Comprehensive ESLint plugin for vanilla-extract with CSS property ordering, style validation, and best practices enforcement. Supports alphabetical, concentric and custom CSS ordering, auto-fixing, and zero-runtime safety.",
   "author": "Ante Budimir",
   "license": "MIT",
@@ -64,6 +64,10 @@
   },
   "peerDependencies": {
     "eslint": ">=8.57.0"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.28.5",
+    "@babel/types": "^7.28.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
