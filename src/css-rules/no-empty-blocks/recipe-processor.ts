@@ -1,6 +1,6 @@
 import type { Rule } from 'eslint';
 import { TSESTree } from '@typescript-eslint/utils';
-import { isEmptyObject } from '../shared-utils/empty-object-processor.js';
+import { isCallExpressionWithEmptyObject, isEmptyObject } from '../shared-utils/empty-object-processor.js';
 import { processEmptyNestedStyles } from './empty-nested-style-processor.js';
 import { removeNodeWithComma } from './node-remover.js';
 import { areAllChildrenEmpty, getStyleKeyName } from './property-utils.js';
@@ -88,8 +88,30 @@ export const processRecipeProperties = (
               return;
             }
 
-            // Check for non-object variant values
-            if (variantValueProperty.value.type !== 'ObjectExpression') {
+            const valueType = variantValueProperty.value.type;
+
+            // Allow CallExpression (e.g., sprinkles(), style()) as valid variant values unless it has an empty object argument, e.g. sprinkles({})
+            if (valueType === 'CallExpression') {
+              const callExpression = variantValueProperty.value as TSESTree.CallExpression;
+              if (isCallExpressionWithEmptyObject(callExpression)) {
+                // Treat sprinkles({}) or style({}) as empty
+                if (!reportedNodes.has(variantValueProperty)) {
+                  reportedNodes.add(variantValueProperty);
+                  ruleContext.report({
+                    node: variantValueProperty as Rule.Node,
+                    messageId: 'emptyVariantValue',
+                    fix(fixer) {
+                      return removeNodeWithComma(ruleContext, variantValueProperty, fixer);
+                    },
+                  });
+                }
+              }
+              // Valid CallExpressions with arguments are fine
+              return;
+            }
+
+            // Check for non-object variant values (excluding CallExpression)
+            if (valueType !== 'ObjectExpression') {
               if (!reportedNodes.has(variantValueProperty)) {
                 reportedNodes.add(variantValueProperty);
 

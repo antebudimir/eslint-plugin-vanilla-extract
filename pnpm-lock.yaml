@@ -39,6 +39,9 @@ importers:
       '@vanilla-extract/recipes':
         specifier: ^0.5.5
         version: 0.5.5(@vanilla-extract/css@1.17.1)
+      '@vanilla-extract/sprinkles':
+        specifier: ^1.6.0
+        version: 1.6.5(@vanilla-extract/css@1.17.1)
       '@vitest/coverage-v8':
         specifier: 3.0.8
         version: 3.0.8(vitest@3.0.8(@types/node@20.17.24)(tsx@4.19.3))
@@ -608,6 +611,11 @@ packages:
 
   '@vanilla-extract/recipes@0.5.5':
     resolution: {integrity: sha512-VadU7+IFUwLNLMgks29AHav/K5h7DOEfTU91RItn5vwdPfzduodNg317YbgWCcpm7FSXkuR3B3X8ZOi95UOozA==}
+    peerDependencies:
+      '@vanilla-extract/css': ^1.0.0
+
+  '@vanilla-extract/sprinkles@1.6.5':
+    resolution: {integrity: sha512-HOYidLONR/SeGk8NBAeI64I4gYdsMX9vJmniL13ZcLVwawyK0s2GUENEAcGA+GYLIoeyQB61UqmhqPodJry7zA==}
     peerDependencies:
       '@vanilla-extract/css': ^1.0.0
 
@@ -2315,6 +2323,10 @@ snapshots:
   '@vanilla-extract/private@1.0.6': {}
 
   '@vanilla-extract/recipes@0.5.5(@vanilla-extract/css@1.17.1)':
+    dependencies:
+      '@vanilla-extract/css': 1.17.1
+
+  '@vanilla-extract/sprinkles@1.6.5(@vanilla-extract/css@1.17.1)':
     dependencies:
       '@vanilla-extract/css': 1.17.1
 

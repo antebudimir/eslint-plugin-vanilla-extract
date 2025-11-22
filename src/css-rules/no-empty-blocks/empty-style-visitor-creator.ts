@@ -1,6 +1,6 @@
 import type { Rule } from 'eslint';
 import { TSESTree } from '@typescript-eslint/utils';
-import { isEmptyObject } from '../shared-utils/empty-object-processor.js';
+import { isCallExpressionWithEmptyObject, isEmptyObject } from '../shared-utils/empty-object-processor.js';
 import { ReferenceTracker, createReferenceTrackingVisitor } from '../shared-utils/reference-tracker.js';
 import { processConditionalExpression } from './conditional-processor.js';
 import { processEmptyNestedStyles } from './empty-nested-style-processor.js';
@@ -58,7 +58,13 @@ export const isEffectivelyEmptyStylesObject = (stylesObject: TSESTree.ObjectExpr
 
     if (propertyName === 'base') {
       hasBaseProperty = true;
-      if (property.value.type === 'ObjectExpression' && !isEmptyObject(property.value)) {
+
+      // CallExpression (e.g., sprinkles(), style()) is considered non-empty unless it has an empty object argument, e.g. sprinkles({})
+      if (property.value.type === 'CallExpression') {
+        if (!isCallExpressionWithEmptyObject(property.value)) {
+          isBaseEmpty = false;
+        }
+      } else if (property.value.type === 'ObjectExpression' && !isEmptyObject(property.value)) {
         isBaseEmpty = false;
       }
     } else if (propertyName === 'variants') {
