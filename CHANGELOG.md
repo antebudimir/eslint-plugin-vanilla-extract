@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.1] - 2025-11-22
+
+- Fix [issue #7](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/3) to prevent false positives for `sprinkles()`/`style()`/`recipe()` calls with non-empty object arguments while continuing to flag bare `({})` calls
+- Add regression tests covering empty and non-empty call expressions in recipe base/variants to guard against future regressions
+
 ## [1.15.0] - 2025-11-14
 
 - Add new rule `prefer-theme-tokens`that requires theme tokens instead of hard-coded values in vanilla-extract styles

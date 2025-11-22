@@ -12,7 +12,7 @@ import preferThemeTokensRule from './css-rules/prefer-theme-tokens/index.js';
 const vanillaExtract = {
   meta: {
     name: '@antebudimir/eslint-plugin-vanilla-extract',
-    version: '1.15.0',
+    version: '1.15.1',
   },
   rules: {
     'alphabetical-order': alphabeticalOrderRule,

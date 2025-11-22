@@ -89,6 +89,124 @@ run({
     }
   });
 `,
+
+    // Recipe with sprinkles() in base - should be valid
+    `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { display: ['flex'], flexDirection: ['row'], flexWrap: ['wrap-reverse'] }
+    }));
+    
+    export const columnsStyle = recipe({
+      base: sprinkles({ display: 'flex', flexDirection: 'row' }),
+      variants: {
+        wrappingDirection: {
+          reverse: sprinkles({ flexWrap: 'wrap-reverse' }),
+        },
+      },
+    });
+  `,
+
+    // Recipe with sprinkles() in variant values - should be valid
+    `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { padding: ['8px', '16px'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: { color: 'black' },
+      variants: {
+        spacing: {
+          small: sprinkles({ padding: '8px' }),
+          large: sprinkles({ padding: '16px' }),
+        },
+      },
+    });
+  `,
+
+    // Recipe with style() calls in variant values - should be valid
+    `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { style } from '@vanilla-extract/css';
+    
+    const myRecipe = recipe({
+      base: { color: 'black' },
+      variants: {
+        size: {
+          small: style({ fontSize: '12px' }),
+          large: style({ fontSize: '16px' }),
+        },
+      },
+    });
+  `,
+
+    // Recipe with mixed CallExpression and ObjectExpression in variants - should be valid
+    `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { padding: ['8px'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: { color: 'black' },
+      variants: {
+        variant: {
+          sprinkled: sprinkles({ padding: '8px' }),
+          regular: { padding: '8px' },
+        },
+      },
+    });
+  `,
+
+    // Recipe with only CallExpression variants (no default) - should be valid
+    `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { flexWrap: ['wrap-reverse'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: { color: 'black' },
+      variants: {
+        wrappingDirection: {
+          reverse: sprinkles({ flexWrap: 'wrap-reverse' }),
+        },
+      },
+    });
+  `,
+
+    // Recipe with nested CallExpression in multiple variant categories - should be valid
+    `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { display: ['flex'], padding: ['8px', '16px'], color: ['blue', 'gray'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: sprinkles({ display: 'flex' }),
+      variants: {
+        spacing: {
+          small: sprinkles({ padding: '8px' }),
+          large: sprinkles({ padding: '16px' }),
+        },
+        color: {
+          primary: sprinkles({ color: 'blue' }),
+          secondary: sprinkles({ color: 'gray' }),
+        },
+      },
+    });
+  `,
   ],
   invalid: [
     // Empty recipe
@@ -279,6 +397,186 @@ run({
   });
 `,
       errors: [{ messageId: 'invalidPropertyType', data: { type: 'ArrowFunctionExpression' } }],
+    },
+
+    // Recipe with empty variant category alongside CallExpression variants
+    // Should only report the empty category, not the CallExpression
+    {
+      code: `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { padding: ['8px', '16px'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: { color: 'black' },
+      variants: {
+        spacing: {
+          small: sprinkles({ padding: '8px' }),
+          large: sprinkles({ padding: '16px' }),
+        },
+        emptyCategory: {},
+      },
+    });
+  `,
+      errors: [{ messageId: 'emptyVariantCategory' }],
+      output: `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { padding: ['8px', '16px'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: { color: 'black' },
+      variants: {
+        spacing: {
+          small: sprinkles({ padding: '8px' }),
+          large: sprinkles({ padding: '16px' }),
+        },
+        
+      },
+    });
+  `,
+    },
+
+    // Recipe with CallExpression in base and empty variants
+    {
+      code: `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { display: ['flex'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: sprinkles({ display: 'flex' }),
+      variants: {},
+    });
+  `,
+      errors: [{ messageId: 'emptyRecipeProperty' }],
+      output: `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { display: ['flex'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: sprinkles({ display: 'flex' }),
+      
+    });
+  `,
+    },
+
+    // Recipe with mixed valid CallExpression and invalid literal in same category
+    {
+      code: `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { padding: ['8px'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: { color: 'black' },
+      variants: {
+        spacing: {
+          small: sprinkles({ padding: '8px' }),
+          invalid: 'invalid-string',
+        },
+      },
+    });
+  `,
+      errors: [{ messageId: 'invalidPropertyType' }],
+    },
+
+    // Recipe with sprinkles({}) in base and empty variants - entire recipe is empty
+    {
+      code: `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { display: ['flex'] }
+    }));
+    
+    export const myRecipe = recipe({
+      base: sprinkles({}),
+      variants: {},
+    });
+  `,
+      errors: [{ messageId: 'emptyStyleDeclaration' }],
+    },
+
+    // Recipe with sprinkles({}) in variant value - should be flagged as empty
+    {
+      code: `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { padding: ['8px'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: { color: 'black' },
+      variants: {
+        spacing: {
+          small: sprinkles({ padding: '8px' }),
+          empty: sprinkles({}),
+        },
+      },
+    });
+  `,
+      errors: [{ messageId: 'emptyVariantValue' }],
+      output: `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { padding: ['8px'] }
+    }));
+    
+    const myRecipe = recipe({
+      base: { color: 'black' },
+      variants: {
+        spacing: {
+          small: sprinkles({ padding: '8px' }),
+          
+        },
+      },
+    });
+  `,
+    },
+
+    // Recipe with both base and variants using empty CallExpressions - entire recipe becomes empty
+    {
+      code: `
+    import { recipe } from '@vanilla-extract/recipes';
+    import { style } from '@vanilla-extract/css';
+    import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
+    
+    const sprinkles = createSprinkles(defineProperties({
+      properties: { display: ['flex'] }
+    }));
+    
+    export const myRecipe = recipe({
+      base: style({}),
+      variants: {
+        layout: {
+          flex: sprinkles({}),
+        },
+      },
+    });
+  `,
+      errors: [{ messageId: 'emptyStyleDeclaration' }, { messageId: 'emptyVariantValue' }],
     },
   ],
 });

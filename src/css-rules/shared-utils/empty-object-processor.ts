@@ -15,3 +15,16 @@ export const isObjectExpression = (node: TSESTree.Node): node is TSESTree.Object
 export const isEmptyObject = (node: TSESTree.Node): boolean => {
   return isObjectExpression(node) && node.properties.length === 0;
 };
+
+/**
+ * Checks if a CallExpression has an empty object as its first argument.
+ * Examples: sprinkles({}), style({}), recipe({})
+ */
+export const isCallExpressionWithEmptyObject = (node: TSESTree.CallExpression): boolean => {
+  if (node.arguments.length === 0) {
+    return false;
+  }
+
+  const firstArgument = node.arguments[0];
+  return firstArgument?.type === 'ObjectExpression' && isEmptyObject(firstArgument);
+};
