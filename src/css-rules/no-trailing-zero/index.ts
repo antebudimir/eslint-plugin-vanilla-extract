@@ -1,1 +1,3 @@
-export { default } from './rule-definition.js';
+import noTrailingZeroRule from './rule-definition.js';
+
+export default noTrailingZeroRule;
