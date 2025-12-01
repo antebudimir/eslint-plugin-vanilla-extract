@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0] - 2025-12-01
+
+- Add new rule `no-unitless-values` that disallows unitless numeric values for CSS properties that require units
+  - Flags both numeric literals (e.g., `width: 100`) and string literals with unitless numbers (e.g., `width: '100'`)
+  - Allows zero values without units (valid CSS) and properties that accept unitless values (opacity, zIndex, lineHeight, etc.)
+  - Configurable allowlist via `allow` option to exclude specific properties from checking
+  - Optional rule (not included in recommended config) - teams can enable when they prefer explicit units over vanilla-extract's automatic px conversion
+
 ## [1.15.1] - 2025-11-22
 
 - Fix [issue #7](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/7) to prevent false positives for `sprinkles()`/`style()`/`recipe()` calls with non-empty object arguments while continuing to flag bare `({})` calls

@@ -264,6 +264,7 @@ The recommended configuration enables the following rules with error severity:
 - `vanilla-extract/alphabetical-order`: Alternative ordering rule (alphabetical sorting)
 - `vanilla-extract/custom-order`: Alternative ordering rule (custom group-based sorting)
 - `vanilla-extract/no-px-unit`: Disallows px units with an optional allowlist
+- `vanilla-extract/no-unitless-values`: Disallows unitless numeric values for CSS properties that require units
 - `vanilla-extract/prefer-logical-properties`: Enforces logical CSS properties over physical directional properties
 - `vanilla-extract/prefer-theme-tokens`: Enforces theme tokens instead of hard-coded values for colors, spacing, font sizes, border radius, border widths, shadows, z-index, opacity, font weights, and transitions/animations (optionally evaluates helper functions and template literals)
 
@@ -535,6 +536,77 @@ export const myStyle = style({
   transition: 'all 0.3s ease',
 });
 ```
+
+### vanilla-extract/no-unitless-values
+
+This rule disallows unitless numeric values for CSS properties that require units in vanilla-extract style objects. It helps teams that prefer explicit units avoid confusion, as vanilla-extract automatically converts unitless numbers to `px` at runtime.
+
+**Note:** This is an optional rule (not enabled in recommended config). Enable it only if your team prefers explicit units over vanilla-extract's automatic `px` conversion.
+
+Configuration with allowed properties:
+
+```json
+{
+  "rules": {
+    "vanilla-extract/no-unitless-values": ["warn", { "allow": ["width", "height"] }]
+  }
+}
+```
+
+```typescript
+// ❌ Incorrect
+import { style } from '@vanilla-extract/css';
+
+export const myStyle = style({
+  width: 100,
+  margin: 20,
+  padding: 10.5,
+  height: '50',
+  top: '-10',
+});
+
+// ✅ Correct
+import { style } from '@vanilla-extract/css';
+
+export const myStyle = style({
+  width: '100px',
+  margin: '20px',
+  padding: 0,
+  height: '50rem',
+  opacity: 0.5,      // opacity accepts unitless values
+  lineHeight: 1.5,   // line-height accepts unitless values
+  zIndex: 10,        // z-index accepts unitless values
+});
+```
+
+**Properties that require units:**
+
+- **Box model:** `width`, `height`, `minWidth`, `maxWidth`, `minHeight`, `maxHeight`, `min-width`, `max-width`, `min-height`, `max-height`
+- **Spacing:** `margin`, `marginTop`, `marginRight`, `marginBottom`, `marginLeft`, `marginBlock`, `marginBlockStart`, `marginBlockEnd`, `marginInline`, `marginInlineStart`, `marginInlineEnd`, `margin-top`, `margin-right`, `margin-bottom`, `margin-left`, `margin-block`, `margin-block-start`, `margin-block-end`, `margin-inline`, `margin-inline-start`, `margin-inline-end`, `padding`, `paddingTop`, `paddingRight`, `paddingBottom`, `paddingLeft`, `paddingBlock`, `paddingBlockStart`, `paddingBlockEnd`, `paddingInline`, `paddingInlineStart`, `paddingInlineEnd`, `padding-top`, `padding-right`, `padding-bottom`, `padding-left`, `padding-block`, `padding-block-start`, `padding-block-end`, `padding-inline`, `padding-inline-start`, `padding-inline-end`
+- **Positioning:** `top`, `right`, `bottom`, `left`, `inset`, `insetBlock`, `insetBlockStart`, `insetBlockEnd`, `insetInline`, `insetInlineStart`, `insetInlineEnd`, `inset-block`, `inset-block-start`, `inset-block-end`, `inset-inline`, `inset-inline-start`, `inset-inline-end`
+- **Border:** `borderWidth`, `borderTopWidth`, `borderRightWidth`, `borderBottomWidth`, `borderLeftWidth`, `borderBlockWidth`, `borderBlockStartWidth`, `borderBlockEndWidth`, `borderInlineWidth`, `borderInlineStartWidth`, `borderInlineEndWidth`, `border-width`, `border-top-width`, `border-right-width`, `border-bottom-width`, `border-left-width`, `border-block-width`, `border-block-start-width`, `border-block-end-width`, `border-inline-width`, `border-inline-start-width`, `border-inline-end-width`, `borderRadius`, `borderTopLeftRadius`, `borderTopRightRadius`, `borderBottomLeftRadius`, `borderBottomRightRadius`, `borderStartStartRadius`, `borderStartEndRadius`, `borderEndStartRadius`, `borderEndEndRadius`, `border-radius`, `border-top-left-radius`, `border-top-right-radius`, `border-bottom-left-radius`, `border-bottom-right-radius`, `border-start-start-radius`, `border-start-end-radius`, `border-end-start-radius`, `border-end-end-radius`
+- **Typography:** `fontSize`, `font-size`, `letterSpacing`, `letter-spacing`, `wordSpacing`, `word-spacing`, `textIndent`, `text-indent`
+- **Layout:** `gap`, `rowGap`, `columnGap`, `row-gap`, `column-gap`, `flexBasis`, `flex-basis`
+- **Outline:** `outlineWidth`, `outline-width`, `outlineOffset`, `outline-offset`
+- **Other:** `blockSize`, `inlineSize`, `minBlockSize`, `maxBlockSize`, `minInlineSize`, `maxInlineSize`, `block-size`, `inline-size`, `min-block-size`, `max-block-size`, `min-inline-size`, `max-inline-size`
+
+**Properties that accept unitless values:**
+
+- **Common:** `opacity`, `zIndex`, `z-index`, `lineHeight`, `line-height`, `flexGrow`, `flex-grow`, `flexShrink`, `flex-shrink`, `order`, `fontWeight`, `font-weight`, `zoom`
+- **Animation:** `animationIterationCount`, `animation-iteration-count`
+- **Layout:** `columnCount`, `column-count`, `orphans`, `widows`
+- **Grid:** `gridColumn`, `grid-column`, `gridColumnEnd`, `grid-column-end`, `gridColumnStart`, `grid-column-start`, `gridRow`, `grid-row`, `gridRowEnd`, `grid-row-end`, `gridRowStart`, `grid-row-start`
+- **SVG:** `fillOpacity`, `fill-opacity`, `strokeOpacity`, `stroke-opacity`, `strokeMiterlimit`, `stroke-miterlimit`
+
+**Why use this rule?**
+
+While vanilla-extract safely converts unitless numbers to `px`, some teams prefer explicit units because:
+
+1. It makes the intended unit clear (px, rem, em, %, etc.)
+2. It prevents accidental use of px when rem or other units are preferred
+3. It aligns with CSS best practices of being explicit about units
+
+**Auto-fix:** Not available. Since different teams prefer different units (px, rem, em, %), you must manually add your preferred unit.
 
 ### vanilla-extract/no-unknown-unit
 
@@ -835,10 +907,7 @@ The roadmap outlines the project's current status and future plans:
 - `no-px-unit` rule to disallow use of `px` units with configurable whitelist.
 - `prefer-logical-properties` rule to enforce use of logical properties.
 - `prefer-theme-tokens` rule to enforce theme tokens instead of hard-coded values for colors, spacing, font sizes, border radius, border widths, shadows, z-index, opacity, font weights, and transitions/animations (optionally evaluates helper functions and template literals).
-
-### Current Work
-
-- `no-unitless-values` rule that disallows numeric literals for CSS properties that are not unitless in CSS.
+- `no-unitless-values` rule to disallow unitless numeric values for CSS properties that require units.
 
 ### Upcoming Features
 
