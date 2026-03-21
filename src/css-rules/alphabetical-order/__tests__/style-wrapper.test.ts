@@ -195,5 +195,69 @@ run({
         });
       `,
     },
+
+    // Imported local wrapper with global settings style
+    {
+      code: `
+        import { componentStyle } from './style.css.js';
+
+        export const myStyle = componentStyle({
+          padding: '18px',
+          backgroundColor: 'black',
+        });
+      `,
+      settings: {
+        'vanilla-extract': {
+          style: ['componentStyle'],
+        },
+      },
+      errors: [{ messageId: 'alphabeticalOrder' }],
+      output: `
+        import { componentStyle } from './style.css.js';
+
+        export const myStyle = componentStyle({
+          backgroundColor: 'black',
+          padding: '18px',
+        });
+      `,
+    },
+
+    // Both vanilla style and configured wrapper should be linted (wrapper augments, not replaces)
+    {
+      code: `
+        import { style } from '@vanilla-extract/css';
+        import { componentStyle } from './style.css.js';
+
+        export const a = style({
+          display: 'flex',
+          color: 'white',
+        });
+
+        export const b = componentStyle({
+          padding: '18px',
+          backgroundColor: 'black',
+        });
+      `,
+      settings: {
+        'vanilla-extract': {
+          style: ['componentStyle'],
+        },
+      },
+      errors: [{ messageId: 'alphabeticalOrder' }, { messageId: 'alphabeticalOrder' }],
+      output: `
+        import { style } from '@vanilla-extract/css';
+        import { componentStyle } from './style.css.js';
+
+        export const a = style({
+          color: 'white',
+          display: 'flex',
+        });
+
+        export const b = componentStyle({
+          backgroundColor: 'black',
+          padding: '18px',
+        });
+      `,
+    },
   ],
 });

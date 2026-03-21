@@ -27,8 +27,10 @@ export class ReferenceTracker {
   private imports: Map<string, ImportReference> = new Map();
   private trackedFunctions: TrackedFunctions;
   private wrapperFunctions: Map<string, WrapperFunctionInfo> = new Map(); // wrapper function name -> detailed info
+  private style: Set<string>;
+  private recipe: Set<string>;
 
-  constructor() {
+  constructor(options?: { style?: string[]; recipe?: string[] }) {
     this.trackedFunctions = {
       styleFunctions: new Set(),
       recipeFunctions: new Set(),
@@ -36,6 +38,8 @@ export class ReferenceTracker {
       globalFunctions: new Set(),
       keyframeFunctions: new Set(),
     };
+    this.style = new Set(options?.style ?? []);
+    this.recipe = new Set(options?.recipe ?? []);
   }
 
   /**
@@ -44,25 +48,38 @@ export class ReferenceTracker {
   processImportDeclaration(node: TSESTree.ImportDeclaration): void {
     const source = node.source.value;
 
-    // Check if this is a vanilla-extract import
-    if (typeof source !== 'string' || !this.isVanillaExtractSource(source)) {
+    if (typeof source !== 'string') {
       return;
     }
+
+    const isVanillaExtractImport = this.isVanillaExtractSource(source);
 
     node.specifiers.forEach((specifier) => {
       if (specifier.type === 'ImportSpecifier') {
         const importedName =
           specifier.imported.type === 'Identifier' ? specifier.imported.name : specifier.imported.value;
         const localName = specifier.local.name;
+        const customWrapper = this.getCustomWrapper(importedName, localName);
+
+        let trackedImportName: string;
+
+        if (isVanillaExtractImport) {
+          trackedImportName = importedName;
+        } else {
+          if (!customWrapper) {
+            return;
+          }
+          trackedImportName = customWrapper;
+        }
 
         const reference: ImportReference = {
           source,
-          importedName,
+          importedName: trackedImportName,
           localName,
         };
 
         this.imports.set(localName, reference);
-        this.categorizeFunction(localName, importedName);
+        this.categorizeFunction(localName, trackedImportName);
       }
     });
   }
@@ -274,6 +291,18 @@ export class ReferenceTracker {
       source === '@vanilla-extract/recipes' ||
       source.startsWith('@vanilla-extract/')
     );
+  }
+
+  private getCustomWrapper(importedName: string, localName: string): 'style' | 'recipe' | null {
+    if (this.style.has(importedName) || this.style.has(localName)) {
+      return 'style';
+    }
+
+    if (this.recipe.has(importedName) || this.recipe.has(localName)) {
+      return 'recipe';
+    }
+
+    return null;
   }
 
   private categorizeFunction(localName: string, importedName: string): void {

@@ -207,5 +207,46 @@ run({
         });
       `,
     },
+    // Imported local recipe wrapper with global settings recipe
+    {
+      code: `
+        import { componentRecipe } from './component-recipe.css.js';
+
+        const myRecipe = componentRecipe({
+          base: {
+            backgroundColor: 'white',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            margin: 0
+          }
+        });
+      `,
+      options: [
+        {
+          groupOrder: ['dimensions', 'margin', 'font', 'border', 'boxShadow'],
+          sortRemainingProperties: 'concentric',
+        },
+      ],
+      settings: {
+        'vanilla-extract': {
+          recipe: ['componentRecipe'],
+        },
+      },
+      errors: [{ messageId: 'incorrectOrder' }],
+      output: `
+        import { componentRecipe } from './component-recipe.css.js';
+
+        const myRecipe = componentRecipe({
+          base: {
+            width: '100%',
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'white'
+          }
+        });
+      `,
+    },
   ],
 });

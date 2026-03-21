@@ -10,7 +10,7 @@ import { enforceFontFaceOrder } from './font-face-property-order-enforcer.js';
 import { ReferenceTracker, createReferenceTrackingVisitor } from './reference-tracker.js';
 import { processStyleNode } from './style-node-processor.js';
 import type { SortRemainingProperties } from '../concentric-order/types.js';
-import type { OrderingStrategy } from '../types.js';
+import type { OrderingStrategy, VanillaExtractPluginSettings } from '../types.js';
 
 /**
  * Creates an ESLint rule listener with visitors for style-related function calls using reference tracking.
@@ -28,7 +28,8 @@ export const createNodeVisitors = (
   userDefinedGroupOrder?: string[],
   sortRemainingProperties?: SortRemainingProperties,
 ): Rule.RuleListener => {
-  const tracker = new ReferenceTracker();
+  const wrapperSettings = resolveWrapperSettings(ruleContext);
+  const tracker = new ReferenceTracker(wrapperSettings);
   const trackingVisitor = createReferenceTrackingVisitor(tracker);
 
   return {
@@ -102,6 +103,21 @@ export const createNodeVisitors = (
           break;
       }
     },
+  };
+};
+
+const resolveWrapperSettings = (
+  ruleContext: Rule.RuleContext,
+): {
+  style: string[];
+  recipe: string[];
+} => {
+  const pluginSettings = (ruleContext.settings?.['vanilla-extract'] ??
+    {}) as VanillaExtractPluginSettings;
+
+  return {
+    style: pluginSettings.style ?? [],
+    recipe: pluginSettings.recipe ?? [],
   };
 };
 

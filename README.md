@@ -304,6 +304,36 @@ export default [
 
 > **Note:** Remember to enable only one ordering rule at a time. See the "Important" section above for details on switching between ordering rules.
 
+### Global Settings (Recommended for shared wrappers)
+
+If you use imported wrapper functions across multiple ordering rules, configure them once in ESLint `settings`.
+All ordering rules (`alphabetical-order`, `concentric-order`, `custom-order`) read this value.
+
+```typescript
+import { defineConfig } from 'eslint/config';
+import vanillaExtract from '@antebudimir/eslint-plugin-vanilla-extract';
+
+export default defineConfig([
+  {
+    files: ['**/*.css.ts'],
+    plugins: {
+      'vanilla-extract': vanillaExtract,
+    },
+    settings: {
+      'vanilla-extract': {
+        style: ['componentStyle', 'layerStyle'],
+        recipe: ['componentRecipe'],
+      },
+    },
+    rules: {
+      ...vanillaExtract.configs.recommended.rules,
+    },
+  },
+]);
+```
+
+Configure wrapper names only via ESLint `settings` (`style`, `recipe`).
+
 ## Rules
 
 ### vanilla-extract/alphabetical-order
@@ -336,6 +366,32 @@ export const myStyle = style({
 });
 ```
 
+#### Global setting: `settings['vanilla-extract'].style`
+
+`vanilla-extract/alphabetical-order` reads wrapper names from global ESLint settings.
+
+```typescript
+import { defineConfig } from 'eslint/config';
+import vanillaExtract from '@antebudimir/eslint-plugin-vanilla-extract';
+
+export default defineConfig([
+  {
+    files: ['**/*.css.ts'],
+    plugins: {
+      'vanilla-extract': vanillaExtract,
+    },
+    settings: {
+      'vanilla-extract': {
+        style: ['componentStyle'],
+      },
+    },
+    rules: {
+      'vanilla-extract/alphabetical-order': 'error',
+    },
+  },
+]);
+```
+
 ### vanilla-extract/concentric-order
 
 This rule enforces that CSS properties in vanilla-extract style objects follow the [concentric CSS](#concentric-css-model) ordering pattern, which organizes properties from outside to inside.
@@ -364,6 +420,33 @@ export const myStyle = style({
 });
 ```
 
+#### Global setting: `settings['vanilla-extract'].style`
+
+Use this setting when style wrappers are imported from local modules (for example `componentStyle`, `layerStyle`).
+If a wrapper function name is listed, the rule treats calls to that function like `style(...)` calls.
+
+```typescript
+import { defineConfig } from 'eslint/config';
+import vanillaExtract from '@antebudimir/eslint-plugin-vanilla-extract';
+
+export default defineConfig([
+  {
+    files: ['**/*.css.ts'],
+    plugins: {
+      'vanilla-extract': vanillaExtract,
+    },
+    settings: {
+      'vanilla-extract': {
+        style: ['componentStyle', 'layerStyle'],
+      },
+    },
+    rules: {
+      'vanilla-extract/concentric-order': 'error',
+    },
+  },
+]);
+```
+
 ### vanilla-extract/custom-order
 
 The `vanilla-extract/custom-order` rule enables you to enforce a custom ordering of CSS properties in your
@@ -387,6 +470,39 @@ Default behavior:
 To configure the rule, add it to your ESLint configuration file with your desired options. You can customize the
 `groups` array to include any number of available CSS property groups you want to enforce, with a minimum of one group
 required.
+
+#### Global setting: `settings['vanilla-extract'].style`
+
+`vanilla-extract/custom-order` also reads `style` from global settings together with
+`groupOrder` and `sortRemainingProperties`.
+
+```typescript
+import { defineConfig } from 'eslint/config';
+import vanillaExtract from '@antebudimir/eslint-plugin-vanilla-extract';
+
+export default defineConfig([
+  {
+    files: ['**/*.css.ts'],
+    plugins: {
+      'vanilla-extract': vanillaExtract,
+    },
+    settings: {
+      'vanilla-extract': {
+        style: ['componentStyle'],
+      },
+    },
+    rules: {
+      'vanilla-extract/custom-order': [
+        'error',
+        {
+          groupOrder: ['font', 'dimensions', 'margin', 'padding', 'position', 'border'],
+          sortRemainingProperties: 'alphabetical',
+        },
+      ],
+    },
+  },
+]);
+```
 
 ```typescript
 // ❌ Incorrect (Unordered)
