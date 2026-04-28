@@ -41,6 +41,20 @@ run({
         }
       });
     `,
+
+    // Recipe with base as array (ComplexStyleRule)
+    `
+      import { recipe } from '@vanilla-extract/recipes';
+
+      const myRecipe = recipe({
+        base: [{
+          position: 'relative',
+          display: 'flex',
+          backgroundColor: 'white',
+          width: '100%'
+        }],
+      });
+    `,
   ],
   invalid: [
     // Recipe with incorrect ordering
@@ -98,7 +112,34 @@ run({
       `,
     },
 
-    // Imported local recipe wrapper with global settings recipe
+    // Recipe with base array in incorrect order
+    {
+      code: `
+        import { recipe } from '@vanilla-extract/recipes';
+        const myRecipe = recipe({
+          base: [{
+            backgroundColor: 'white',
+            width: '100%',
+            display: 'flex',
+            position: 'relative'
+          }],
+        });
+      `,
+      errors: [{ messageId: 'incorrectOrder' }],
+      output: `
+        import { recipe } from '@vanilla-extract/recipes';
+        const myRecipe = recipe({
+          base: [{
+            position: 'relative',
+            display: 'flex',
+            backgroundColor: 'white',
+            width: '100%'
+          }],
+        });
+      `,
+    },
+
+        // Imported local recipe wrapper with global settings recipe
     {
       code: `
         import { componentRecipe } from './recipe.css.js';

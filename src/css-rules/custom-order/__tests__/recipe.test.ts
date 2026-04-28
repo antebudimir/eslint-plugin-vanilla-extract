@@ -88,6 +88,29 @@ run({
         },
       ],
     },
+
+    // Recipe with base as array (ComplexStyleRule)
+    {
+      code: `
+        import { recipe } from '@vanilla-extract/recipes';
+
+        const myRecipe = recipe({
+          base: [{
+            width: '100%',
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'white'
+          }],
+        });
+      `,
+      options: [
+        {
+          groupOrder: ['dimensions', 'margin', 'font', 'border', 'boxShadow'],
+          sortRemainingProperties: 'concentric',
+        },
+      ],
+    },
   ],
   invalid: [
     // Recipe with incorrect ordering (concentric for remaining)
@@ -207,7 +230,43 @@ run({
         });
       `,
     },
-    // Imported local recipe wrapper with global settings recipe
+
+    // Recipe with base array in incorrect order
+    {
+      code: `
+        import { recipe } from '@vanilla-extract/recipes';
+        const myRecipe = recipe({
+          base: [{
+            backgroundColor: 'white',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            margin: 0
+          }],
+        });
+      `,
+      options: [
+        {
+          groupOrder: ['dimensions', 'margin', 'font', 'border', 'boxShadow'],
+          sortRemainingProperties: 'concentric',
+        },
+      ],
+      errors: [{ messageId: 'incorrectOrder' }],
+      output: `
+        import { recipe } from '@vanilla-extract/recipes';
+        const myRecipe = recipe({
+          base: [{
+            width: '100%',
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'white'
+          }],
+        });
+      `,
+    },
+
+     // Imported local recipe wrapper with global settings recipe
     {
       code: `
         import { componentRecipe } from './component-recipe.css.js';

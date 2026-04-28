@@ -36,6 +36,18 @@ run({
         }
       });
     `,
+
+    // Recipe with base as array (ComplexStyleRule)
+    `
+      import { recipe } from '@vanilla-extract/recipes';
+
+      const myRecipe = recipe({
+        base: [{
+          alignItems: 'center',
+          display: 'flex'
+        }],
+      });
+    `,
   ],
   invalid: [
     // Recipe with incorrect ordering
@@ -88,8 +100,31 @@ run({
         });
       `,
     },
-    
-    // Imported local recipe wrapper with global settings recipe
+
+    // Recipe with base array in incorrect order
+    {
+      code: `
+        import { recipe } from '@vanilla-extract/recipes';
+        const myRecipe = recipe({
+          base: [{
+            display: 'flex',
+            alignItems: 'center'
+          }],
+        });
+      `,
+      errors: [{ messageId: 'alphabeticalOrder' }],
+      output: `
+        import { recipe } from '@vanilla-extract/recipes';
+        const myRecipe = recipe({
+          base: [{
+            alignItems: 'center',
+            display: 'flex'
+          }],
+        });
+      `,
+    },
+
+        // Imported local recipe wrapper with global settings recipe
     {
       code: `
         import { componentRecipe } from './component-recipe.css.js';
