@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.0] - 2026-05-31
+
+- Improve rule support for recipe base arrays by properly linting ComplexStyleRule[] values inside recipes. This ensures ordering rules now analyze and validate array-based base definitions instead of skipping them.
+  - Fixes support for ComplexStyleRule arrays in recipe base.
+  - Adds test coverage for array sorting in recipe base for both alphabetical and custom order rules.
+- Improve wrapper detection by moving it into global settings and adding support for cross-module style and recipe wrappers. This helps ordering rules keep working when style or recipe helpers are wrapped and re-exported from other modules.
+  - Supports cross-module wrapper detection for style and recipe utilities.
+  - Expands test coverage for wrapped style and recipe usage across the ordering rules.
+
 ## [1.16.0] - 2025-12-01
 
 - Add new rule `no-unitless-values` that disallows unitless numeric values for CSS properties that require units ([issue #6](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/6))
