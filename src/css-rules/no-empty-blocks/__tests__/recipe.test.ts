@@ -1,5 +1,6 @@
 import tsParser from '@typescript-eslint/parser';
 import { run } from 'eslint-vitest-rule-tester';
+import { expect } from 'vitest';
 import noEmptyStyleBlocksRule from '../rule-definition.js';
 
 run({
@@ -209,7 +210,7 @@ run({
   `,
   ],
   invalid: [
-    // Empty recipe
+    // Empty recipe - reported but not auto-fixed because it's exported
     {
       code: `
         import { recipe } from '@vanilla-extract/recipes';
@@ -217,10 +218,9 @@ run({
         export const emptyRecipe = recipe({});
       `,
       errors: [{ messageId: 'emptyStyleDeclaration' }],
-      output: `
-        import { recipe } from '@vanilla-extract/recipes';
-        
-      `,
+      output(output) {
+        expect(output).toContain('export const emptyRecipe = recipe({});');
+      },
     },
 
     // Recipe with empty base
@@ -278,7 +278,7 @@ run({
       `,
     },
 
-    // Recipe with both empty base and variants
+    // Recipe with both empty base and variants - reported but not auto-fixed because it's exported
     {
       code: `
         import { recipe } from '@vanilla-extract/recipes';
@@ -289,10 +289,9 @@ run({
         });
       `,
       errors: [{ messageId: 'emptyStyleDeclaration' }],
-      output: `
-        import { recipe } from '@vanilla-extract/recipes';
-        
-      `,
+      output(output) {
+        expect(output).toContain('export const recipeWithBothEmpty = recipe({');
+      },
     },
 
     // Test for non-object property values in recipe
@@ -556,7 +555,7 @@ run({
   `,
     },
 
-    // Recipe with both base and variants using empty CallExpressions - entire recipe becomes empty
+    // Recipe with both base and variants using empty CallExpressions - entire recipe becomes empty (it ain't exported, so the resulting empty declaration's fully auto-removed)
     {
       code: `
     import { recipe } from '@vanilla-extract/recipes';
@@ -567,7 +566,7 @@ run({
       properties: { display: ['flex'] }
     }));
     
-    export const myRecipe = recipe({
+    const myRecipe = recipe({
       base: style({}),
       variants: {
         layout: {

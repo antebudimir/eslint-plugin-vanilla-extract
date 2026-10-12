@@ -64,7 +64,7 @@ run({
     },
   ],
   invalid: [
-    // Empty style variants object
+    // Empty style variants object - reported but not auto-fixed because it's exported
     {
       code: `
         import { styleVariants } from '@vanilla-extract/css';
@@ -73,8 +73,7 @@ run({
       `,
       errors: [{ messageId: 'emptyStyleDeclaration' }],
       output(output) {
-        expect(output).toContain('import { styleVariants } from');
-        expect(output).not.toContain('export const emptyVariants');
+        expect(output).toContain('export const emptyVariants = styleVariants({});');
       },
     },
     // Style variants with empty object property
@@ -127,12 +126,12 @@ run({
         expect(output).not.toContain('secondary: []');
       },
     },
-    // Style variants with all empty properties
+    // Style variants with all empty properties - property-level fixes are applied first, then the resulting fully empty declaration's removed entirely
     {
       code: `
     import { styleVariants } from '@vanilla-extract/css';
 
-    export const allEmptyVariants = styleVariants({
+    const allEmptyVariants = styleVariants({
       primary: {},
       secondary: []
     });
@@ -140,7 +139,7 @@ run({
       errors: [{ messageId: 'emptyVariantValue' }, { messageId: 'emptyVariantValue' }],
       output(output) {
         expect(output).toContain('import { styleVariants } from');
-        expect(output).not.toContain('export const allEmptyVariants');
+        expect(output).not.toContain('allEmptyVariants');
         expect(output).not.toContain('primary: {}');
         expect(output).not.toContain('secondary: []');
       },

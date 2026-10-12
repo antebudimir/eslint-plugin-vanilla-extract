@@ -124,12 +124,12 @@ run({
       `,
     },
 
-    // Nested empty style with multiple levels
+    // Nested empty style with multiple levels - property fix removes the empty selectors, then the resulting empty declaration's removed entirely
     {
       code: `
         import { style } from '@vanilla-extract/css';
         
-        export const nestedEmptyStyle = style({
+        const nestedEmptyStyle = style({
           selectors: {
             '&:hover': {},
             '&:focus': {}

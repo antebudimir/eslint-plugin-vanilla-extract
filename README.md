@@ -366,7 +366,7 @@ export const myStyle = style({
 });
 ```
 
-#### Global setting: `settings['vanilla-extract'].style`
+#### Global setting for alphabetical-order: `settings['vanilla-extract'].style`
 
 `vanilla-extract/alphabetical-order` reads wrapper names from global ESLint settings.
 
@@ -420,7 +420,7 @@ export const myStyle = style({
 });
 ```
 
-#### Global setting: `settings['vanilla-extract'].style`
+#### Global setting for concentric-order: `settings['vanilla-extract'].style`
 
 Use this setting when style wrappers are imported from local modules (for example `componentStyle`, `layerStyle`).
 If a wrapper function name is listed, the rule treats calls to that function like `style(...)` calls.
@@ -471,7 +471,7 @@ To configure the rule, add it to your ESLint configuration file with your desire
 `groups` array to include any number of available CSS property groups you want to enforce, with a minimum of one group
 required.
 
-#### Global setting: `settings['vanilla-extract'].style`
+#### Global setting for custom-order: `settings['vanilla-extract'].style`
 
 `vanilla-extract/custom-order` also reads `style` from global settings together with
 `groupOrder` and `sortRemainingProperties`.
@@ -579,6 +579,31 @@ export const recipeWithEmptyVariants = recipe({
   base: { color: 'black' },
 });
 ```
+
+#### Autofix safety
+
+Rule only auto-removes a declaration when it's safe to do so. Declarations are **reported without an
+autofix** (you must resolve them manually) when:
+
+- the declaration's **exported** (`export const x = style({})`) — exported identifiers can be imported and
+  used as a `className` in other files the rule can't see.
+- the identifier's **still referenced elsewhere in the same file** — e.g. used as a class-name hook inside a
+  `globalStyle()` selector template literal:
+
+```typescript
+// ❌ Reported, but not auto-fixed (the identifier's still referenced)
+import { globalStyle, style } from '@vanilla-extract/css';
+
+// used only as a class-name hook, not for its own props
+export const buttonWrapper = style({});
+
+globalStyle(`${buttonWrapper} > svg`, {
+  color: 'red',
+});
+```
+
+Empty blocks that declare no identifier (e.g. `globalStyle('ul', {})`) and unreferenced, non-exported
+declarations remain fully auto-fixable.
 
 ### vanilla-extract/no-px-unit
 
@@ -837,7 +862,7 @@ Enforces theme tokens instead of hard-coded CSS values. Analyzes your theme cont
 **Options:**
 
 | Option | Type | Default | Description |
-|--------|------|---------|-------------|
+| -------- | ------ | --------- | ------------- |
 | `themeContracts` | `string[]` | `[]` | Theme contract file paths (relative to project root or absolute) |
 | `checkColors` | `boolean` | `true` | Check colors (hex, rgb, hsl, named) |
 | `checkSpacing` | `boolean` | `true` | Check spacing (margin, padding, gap, width, height) |

@@ -1,5 +1,6 @@
 import tsParser from '@typescript-eslint/parser';
 import { run } from 'eslint-vitest-rule-tester';
+import { expect } from 'vitest';
 import noEmptyStyleBlocksRule from '../rule-definition.js';
 
 run({
@@ -104,7 +105,7 @@ run({
       `,
     },
 
-    // Empty exported style object
+    // Empty exported style object - reported but not auto-fixed because exported identifiers can be consumed in other files (e.g. as a className)
     {
       code: `
         import { style } from '@vanilla-extract/css';
@@ -126,24 +127,9 @@ run({
         export const emptyStyle = layerStyle('component', {});
       `,
       errors: [{ messageId: 'emptyStyleDeclaration' }],
-      output: `
-        import { style } from '@vanilla-extract/css';
-
-        export const layerStyle = (
-          layer: 'reset' | 'theme' | 'component' | 'utilities',
-          rule: StyleRule,
-          debugId?: string,
-        ) =>
-          style(
-              {
-                  '@layer': {
-                      [layerMap[layer]]: rule,
-                  },
-              },
-              debugId,
-          );
-        
-      `,
+      output(output) {
+        expect(output).toContain("export const emptyStyle = layerStyle('component', {});");
+      },
     },
 
     // Style with empty nested selectors
@@ -212,27 +198,13 @@ run({
         export const emptyStyle2 = layerStyle('component', {});
       `,
       errors: [{ messageId: 'emptyStyleDeclaration' }, { messageId: 'emptyStyleDeclaration' }],
-      output: `
-        import { style } from '@vanilla-extract/css';
-
-        export const layerStyle = (
-          layer: 'reset' | 'theme' | 'component' | 'utilities',
-          rule: StyleRule,
-          debugId?: string,
-        ) =>
-          style(
-              {
-                  '@layer': {
-                      [layerMap[layer]]: rule,
-                  },
-              },
-              debugId,
-          );
-
-      `,
+      output(output) {
+        expect(output).toContain("export const emptyStyle1 = layerStyle('component', {});");
+        expect(output).toContain("export const emptyStyle2 = layerStyle('component', {});");
+      },
     },
 
-    // Export of variable with empty style
+    // Export of variable with empty style - reported but not auto-fixed because the export statement still references the identifier
     {
       code: `
         import { style } from '@vanilla-extract/css';
@@ -255,25 +227,10 @@ run({
         export { myEmptyStyle };
       `,
       errors: [{ messageId: 'emptyStyleDeclaration' }],
-      output: `
-        import { style } from '@vanilla-extract/css';
-
-        export const layerStyle = (
-          layer: 'reset' | 'theme' | 'component' | 'utilities',
-          rule: StyleRule,
-          debugId?: string,
-        ) =>
-          style(
-              {
-                  '@layer': {
-                      [layerMap[layer]]: rule,
-                  },
-              },
-              debugId,
-          );
-
-        export { myEmptyStyle };
-      `,
+      output(output) {
+        expect(output).toContain("const myEmptyStyle = layerStyle('component', {});");
+        expect(output).toContain('export { myEmptyStyle };');
+      },
     },
 
     // Style in a callback or nested function

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.1] - 2026-10-12
+
+- Fix `no-empty-style-blocks` autofix removing empty `style({})` declarations that are still referenced elsewhere.
+  - Preserves empty styles used as class-name hooks, including references in `globalStyle()` selectors.
+  - Prevents the autofix from leaving references to undefined identifiers.
+
 ## [1.17.0] - 2026-05-31
 
 - Improve rule support for recipe base arrays by properly linting ComplexStyleRule[] values inside recipes. This ensures ordering rules now analyze and validate array-based base definitions instead of skipping them.

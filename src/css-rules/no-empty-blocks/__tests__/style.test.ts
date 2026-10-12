@@ -1,5 +1,6 @@
 import tsParser from '@typescript-eslint/parser';
 import { run } from 'eslint-vitest-rule-tester';
+import { expect } from 'vitest';
 import noEmptyStyleBlocksRule from '../rule-definition.js';
 
 run({
@@ -48,7 +49,7 @@ run({
       `,
     },
 
-    // Empty exported style object
+    // Empty exported style object - reported but not auto-fixed because exported identifiers can be consumed in other files (e.g. as a className)
     {
       code: `
         import { style } from '@vanilla-extract/css';
@@ -56,10 +57,9 @@ run({
         export const emptyStyle = style({});
       `,
       errors: [{ messageId: 'emptyStyleDeclaration' }],
-      output: `
-        import { style } from '@vanilla-extract/css';
-        
-      `,
+      output(output) {
+        expect(output).toContain('export const emptyStyle = style({});');
+      },
     },
 
     // Style with comments in empty object
@@ -78,7 +78,7 @@ run({
       `,
     },
 
-    // Multiple empty styles
+    // Multiple empty styles - reported but not auto-fixed because they're exported
     {
       code: `
         import { style } from '@vanilla-extract/css';
@@ -87,10 +87,10 @@ run({
         export const emptyStyle2 = style({});
       `,
       errors: [{ messageId: 'emptyStyleDeclaration' }, { messageId: 'emptyStyleDeclaration' }],
-      output: `
-        import { style } from '@vanilla-extract/css';
-        
-      `,
+      output(output) {
+        expect(output).toContain('export const emptyStyle1 = style({});');
+        expect(output).toContain('export const emptyStyle2 = style({});');
+      },
     },
 
     // Variable declaration with empty style
@@ -107,7 +107,7 @@ run({
       `,
     },
 
-    // Export of variable with empty style
+    // Export of variable with empty style - reported but not auto-fixed because the export statement still references the identifier
     {
       code: `
         import { style } from '@vanilla-extract/css';
@@ -116,11 +116,10 @@ run({
         export { myEmptyStyle };
       `,
       errors: [{ messageId: 'emptyStyleDeclaration' }],
-      output: `
-        import { style } from '@vanilla-extract/css';
-        
-        export { myEmptyStyle };
-      `,
+      output(output) {
+        expect(output).toContain('const myEmptyStyle = style({});');
+        expect(output).toContain('export { myEmptyStyle };');
+      },
     },
 
     // Style in a callback or nested function
