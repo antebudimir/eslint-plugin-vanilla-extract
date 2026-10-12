@@ -10,7 +10,19 @@ const noEmptyStyleBlocksRule: Rule.RuleModule = {
       recommended: true,
     },
     fixable: 'code',
-    schema: [],
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          ignoreReferenced: {
+            type: 'boolean',
+            default: false,
+            description: `Don't report empty style declarations that are exported or still referenced elsewhere (e.g. intentional class-name hooks).`,
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
     messages: {
       emptyConditionalStyle: 'Empty conditional style object should be removed.',
       emptyMedia: 'Empty @media object should be removed.',

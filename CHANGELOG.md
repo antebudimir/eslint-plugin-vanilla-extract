@@ -5,9 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0] - 2026-10-12
+
+- Add `ignoreReferenced` option to `no-empty-style-blocks` ([issue #13](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/13))
+  - When enabled, empty style declarations that are exported or still referenced elsewhere (e.g. intentional
+    class-name hooks used in `globalStyle()` selectors) are no longer reported at all
+  - Genuinely unused empty declarations are still reported and auto-removed
+  - Property-level detections (empty selectors, variant values, `@media`/`@supports` objects) remain active
+  - Default behavior unchanged: exported/referenced empty declarations are still reported, just without an autofix
+
 ## [1.17.1] - 2026-10-12
 
-- Fix `no-empty-style-blocks` autofix removing empty `style({})` declarations that are still referenced elsewhere.
+- Fix `no-empty-style-blocks` autofix removing empty `style({})` declarations that are still referenced elsewhere ([issue #13](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/13)).
   - Preserves empty styles used as class-name hooks, including references in `globalStyle()` selectors.
   - Prevents the autofix from leaving references to undefined identifiers.
 

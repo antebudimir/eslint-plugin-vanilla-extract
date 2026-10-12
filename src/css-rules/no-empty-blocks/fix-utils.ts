@@ -100,9 +100,15 @@ const isDeclarationSafeToAutoRemove = (ruleContext: Rule.RuleContext, declaratio
 /**
  * Reports an issue for an empty style declaration, and provides a fix to remove the declaration.
  *
- * The removal autofix is only provided when the declaration is not exported and its
- * identifier is not referenced anywhere else in the file - otherwise the fix would break
+ * The removal autofix is only provided when the declaration isn't exported and its
+ * identifier isn't referenced anywhere else in the file
  * those references (e.g. a `globalStyle()` selector or an import in another file).
+ *
+ * With the `ignoreReferenced` option enabled, declarations that can't be safely auto-removed
+ * are not reported at all (useful when empty declarations are used intentionally as
+ * class-name hooks). Property-level reports (empty selectors, variant values, etc.) are
+ * unaffected by this option.
+ *
  * @param ruleContext The ESLint rule context.
  * @param node The node to report the issue on.
  * @param callNode The CallExpression node of the style() function.
@@ -120,7 +126,16 @@ export const reportEmptyDeclaration = (
   // Find the parent declaration node
   const targetDeclarationNode = findTargetDeclarationNode(callNode, isGlobalApi);
 
-  if (!targetDeclarationNode || !isDeclarationSafeToAutoRemove(ruleContext, targetDeclarationNode)) {
+  const isSafeToAutoRemove =
+    targetDeclarationNode !== null && isDeclarationSafeToAutoRemove(ruleContext, targetDeclarationNode);
+
+  // With `ignoreReferenced`, declarations that can't be safely auto-removed (exported or still referenced elsewhere - e.g. intentional class-name hooks) are treated as intentional and not reported at all.
+  const options = ruleContext.options[0] as { ignoreReferenced?: boolean } | undefined;
+  if (options?.ignoreReferenced === true && !isSafeToAutoRemove) {
+    return;
+  }
+
+  if (!isSafeToAutoRemove) {
     // Report the issue without providing a fix
     ruleContext.report({
       node: node as Rule.Node,

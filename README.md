@@ -605,6 +605,27 @@ globalStyle(`${buttonWrapper} > svg`, {
 Empty blocks that declare no identifier (e.g. `globalStyle('ul', {})`) and unreferenced, non-exported
 declarations remain fully auto-fixable.
 
+If you intentionally use empty declarations as class-name hooks and don't want them reported at all, enable the
+`ignoreReferenced` option:
+
+#### Options
+
+| Option             | Type      | Default | Description                                                                                                                          |
+| ------------------ | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `ignoreReferenced` | `boolean` | `false` | Don't report empty style declarations that are exported or still referenced elsewhere (e.g. intentional class-name hooks). |
+
+```json
+{
+  "rules": {
+    "vanilla-extract/no-empty-style-blocks": ["error", { "ignoreReferenced": true }]
+  }
+}
+```
+
+Genuinely unused empty declarations are still reported and auto-removed with this option. Property-level detections
+(empty selectors, `@media`/`@supports` objects, empty variant values, etc.) remain active too — only the
+whole-declaration report for exported/referenced declarations is suppressed.
+
 ### vanilla-extract/no-px-unit
 
 This rule disallows the use of hard-coded `px` units in vanilla-extract style declarations. Prefer `rem`, `em`, or theme tokens. A configurable allowlist lets you permit specific properties to use `px` where necessary. Allowlist supports both camelCase and kebab-case property names.
