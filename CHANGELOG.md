@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.1] - 2026-10-17
+
+- Fix CSS order autofix leaving comments behind when reordering properties ([issue #14](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/14))
+  - Leading `//` and `/* */` comment blocks directly above a property now move together with it during autofixing
+  - Trailing comments on the property's own line also move with the property
+  - A comment separated from a property by a blank line is treated as block-level documentation and stays in place; blank lines between properties are left untouched
+  - Applies to all shared-fixer ordering rules: `alphabetical-order`, `concentric-order`, `custom-order`, and the `@font-face` order enforcer
+
 ## [1.18.0] - 2026-10-12
 
 - Add `ignoreReferenced` option to `no-empty-style-blocks` ([issue #13](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/13))

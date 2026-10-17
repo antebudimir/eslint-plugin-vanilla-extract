@@ -107,5 +107,88 @@ run({
         });
       `,
     },
+
+    // Comments move together with their property when reordering
+    {
+      code: `
+        import { style } from '@vanilla-extract/css';
+
+        export const box = style({
+          // keeps the box above the header
+          zIndex: 2,
+          display: 'flex', // trailing comment stays with display
+          /* sizing: fixed width on purpose */
+          width: 100,
+          position: 'absolute',
+          // !important for whatever reason
+          height: '10px !important',
+        });
+      `,
+      errors: [{ messageId: 'alphabeticalOrder' }],
+      output: `
+        import { style } from '@vanilla-extract/css';
+
+        export const box = style({
+          display: 'flex', // trailing comment stays with display
+          // !important for whatever reason
+          height: '10px !important',
+          position: 'absolute',
+          /* sizing: fixed width on purpose */
+          width: 100,
+          // keeps the box above the header
+          zIndex: 2,
+        });
+      `,
+    },
+
+    // blank line between a comment and a property means the comment documents the block and shouldn't be moved
+    {
+      code: `
+        import { style } from '@vanilla-extract/css';
+
+        export const box = style({
+          // block-level comment about the group below
+
+          zIndex: 2,
+          display: 'flex',
+        });
+      `,
+      errors: [{ messageId: 'alphabeticalOrder' }],
+      output: `
+        import { style } from '@vanilla-extract/css';
+
+        export const box = style({
+          // block-level comment about the group below
+
+          display: 'flex',
+          zIndex: 2,
+        });
+      `,
+    },
+
+    // Blank lines between properties stay where they are while the props themselves move around them
+    {
+      code: `
+        import { style } from '@vanilla-extract/css';
+
+        export const box = style({
+          margin: '10px',
+
+          display: 'flex',
+          alignItems: 'center',
+        });
+      `,
+      errors: [{ messageId: 'alphabeticalOrder' }],
+      output: `
+        import { style } from '@vanilla-extract/css';
+
+        export const box = style({
+          alignItems: 'center',
+
+          display: 'flex',
+          margin: '10px',
+        });
+      `,
+    },
   ],
 });
