@@ -1,0 +1,87 @@
+name: Feature Request
+description: Suggest an enhancement for the vanilla-extract CSS ESLint plugin
+labels:
+  - enhancement
+  - needs-triage
+assignees:
+  - antebudimir
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a feature! Please make sure to fill out
+        all the required fields below.
+
+  - type: checkboxes
+    id: contribution-checklist
+    attributes:
+      label: Contribution Checklist
+      description: Please confirm each of the following before submitting.
+      options:
+        - label: I've confirmed that this feature isn't already implemented
+        - label: I've searched for similar feature requests before creating this one
+        - label: I've checked that this feature aligns with the project's goals
+        - label: I've considered how this would benefit the broader community
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: A clear and concise description of the problem this feature would solve.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: What do you want to happen? A code example is helpful.
+      render: js
+      placeholder: |
+        import { style } from '@vanilla-extract/css';
+
+        const example = style({
+          // How your proposed feature would improve this code
+        });
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What should happen after this feature is implemented?
+
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Alternatives Considered
+      description: Any alternative solutions or features you've considered.
+
+  - type: textarea
+    id: implementation-ideas
+    attributes:
+      label: Implementation Ideas
+      description: Any thoughts on how this could be implemented.
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Real-world scenarios where this feature would be useful.
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context or screenshots about the feature request.
+
+  - type: textarea
+    id: environment-information
+    attributes:
+      label: Environment Information
+      description: Your environment details.
+      placeholder: |
+        - Node Version:
+        - Package Versions:
+          - ESLint:
+          - @vanilla-extract/css:
+          - TypeScript:

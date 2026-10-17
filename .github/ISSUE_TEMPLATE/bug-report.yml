@@ -1,0 +1,146 @@
+name: Bug Report
+description: Report an issue with the vanilla-extract CSS ESLint plugin
+labels:
+  - bug
+  - needs-triage
+assignees:
+  - antebudimir
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Please make sure to
+        include all the info needed to reproduce the issue.
+
+  - type: checkboxes
+    id: contribution-checklist
+    attributes:
+      label: Contribution Checklist
+      description: Please confirm each of the following before submitting.
+      options:
+        - label: I have read documentation and understand the feature
+        - label: I have searched for similar issues before creating this one
+        - label: I have tested this with the latest plugin version
+        - label: I have included all information needed to reproduce the issue
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of the problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Reproduction Steps
+      description: Step-by-step instructions to reproduce the issue.
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-example
+    attributes:
+      label: Code Example
+      description: A minimal code example that demonstrates the issue.
+      render: js
+      placeholder: |
+        import { style } from '@vanilla-extract/css';
+
+        const example = style({
+          // The problematic CSS properties
+        });
+    validations:
+      required: true
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node Version
+      description: Output of `node --version`.
+      placeholder: v22.11.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: package-versions
+    attributes:
+      label: Package Versions
+      description: Versions of the relevant packages.
+      placeholder: |
+        - ESLint:
+        - @vanilla-extract/css:
+        - TypeScript:
+        - @antebudimir/eslint-plugin-vanilla-extract:
+    validations:
+      required: true
+
+  - type: textarea
+    id: eslint-config
+    attributes:
+      label: ESLint Configuration
+      description: The relevant ESLint configuration.
+      render: js
+      placeholder: |
+        {
+          files: [],
+          ignores: [],
+          plugins: {
+            'vanilla-extract': vanillaExtract,
+          },
+          rules: {},
+        }
+    validations:
+      required: true
+
+  - type: textarea
+    id: console-output
+    attributes:
+      label: Console Output
+      description: Relevant console output or error messages.
+      render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots/Videos
+      description: Any screenshots or videos that help illustrate the issue.
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem.
+
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Impact
+      description: How does this bug affect you?
+      options:
+        - label: Blocks critical functionality
+        - label: Produces false positives
+        - label: Misses valid errors
+        - label: Performance issue
+        - label: Other (please specify in Additional Context)
