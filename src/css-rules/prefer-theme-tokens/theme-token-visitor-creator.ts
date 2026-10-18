@@ -1,3 +1,4 @@
+import { cwd as nodeCwd } from 'node:process';
 import * as path from 'path';
 import type { Rule } from 'eslint';
 import { AST_NODE_TYPES, TSESTree } from '@typescript-eslint/utils';
@@ -25,8 +26,16 @@ export const createThemeTokenVisitors = (context: Rule.RuleContext, options: The
   // Load theme contracts if provided
   const themeContracts = options.themeContracts || [];
   if (themeContracts.length > 0) {
-    // Use getCwd() to get project root, or fallback to linted file's directory
-    const baseDir = context.getCwd ? context.getCwd() : path.dirname(context.filename || context.getFilename());
+    // Use project root (cwd) to resolve theme contracts, or fallback to the linted file's directory.
+    // `cwd`/`filename` properties exist on ESLint v9+/v10+; `getCwd()`/`getFilename()` are the ESLint v8 fallbacks.
+    const legacyCtx = context as {
+      cwd?: string;
+      filename?: string;
+      getCwd?: () => string;
+      getFilename?: () => string;
+    };
+    const baseDir =
+      legacyCtx.cwd || path.dirname(legacyCtx.filename || legacyCtx.getFilename?.() || nodeCwd());
     
     themeContracts.forEach((contractPath: string) => {
       analyzer.loadThemeContract(contractPath, baseDir);

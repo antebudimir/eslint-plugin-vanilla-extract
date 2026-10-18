@@ -6,7 +6,6 @@ const noPxUnitRule: Rule.RuleModule = {
     type: 'suggestion',
     docs: {
       description: "disallow 'px' units in vanilla-extract style objects, with allowlist option",
-      category: 'Best Practices',
       recommended: false,
     },
     // Suggestions are reported from helper modules, so static analysis in this file can’t detect them; disable the false positive.

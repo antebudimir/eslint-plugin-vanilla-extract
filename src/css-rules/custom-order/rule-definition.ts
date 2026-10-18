@@ -13,7 +13,6 @@ const customGroupOrderRule: Rule.RuleModule = {
     type: 'suggestion',
     docs: {
       description: 'enforce custom group CSS property ordering in vanilla-extract styles',
-      category: 'Stylistic Issues',
       recommended: true,
     },
     fixable: 'code',

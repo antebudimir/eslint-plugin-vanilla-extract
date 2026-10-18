@@ -118,7 +118,7 @@ const rule: Rule.RuleModule = {
     },
   },
   create(context: Rule.RuleContext): Rule.RuleListener {
-    const options: ThemeTokenOptions = context.options[0] || {};
+    const options: ThemeTokenOptions = (context.options[0] as ThemeTokenOptions | undefined) || {};
     return createThemeTokenVisitors(context, options);
   },
 };

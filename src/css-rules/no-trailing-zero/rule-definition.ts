@@ -6,7 +6,6 @@ const noTrailingZeroRule: Rule.RuleModule = {
     type: 'suggestion',
     docs: {
       description: 'disallow trailing zeros in numeric CSS values',
-      category: 'Stylistic Issues',
       recommended: true,
     },
     fixable: 'code',

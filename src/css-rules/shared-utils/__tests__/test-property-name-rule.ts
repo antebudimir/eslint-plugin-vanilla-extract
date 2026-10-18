@@ -7,7 +7,6 @@ const testRuleForPropertyNameExtractor: Rule.RuleModule = {
     type: 'suggestion',
     docs: {
       description: 'enforce test rule for property name extraction',
-      category: 'Stylistic Issues',
       recommended: false,
     },
     fixable: undefined,

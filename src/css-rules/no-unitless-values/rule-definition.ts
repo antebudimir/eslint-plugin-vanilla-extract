@@ -7,7 +7,6 @@ const noUnitlessValuesRule: Rule.RuleModule = {
     type: 'suggestion',
     docs: {
       description: 'disallow unitless numeric values for CSS properties that require units',
-      category: 'Stylistic Issues',
       recommended: false,
     },
     schema: [

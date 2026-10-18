@@ -6,7 +6,6 @@ const noZeroUnitRule: Rule.RuleModule = {
     type: 'suggestion',
     docs: {
       description: 'enforce unitless zero in numeric values',
-      category: 'Stylistic Issues',
       recommended: true,
     },
     fixable: 'code',

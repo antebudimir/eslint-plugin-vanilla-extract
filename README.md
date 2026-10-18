@@ -27,7 +27,7 @@ Comprehensive ESLint plugin for vanilla-extract that enforces best practices in 
   - Alphabetical ordering for clean, predictable style organization
   - Concentric ordering for logical, outside-in property arrangement
 - Custom group ordering option for more fine-grained control
-- Compatible with ESLint 8.57.0+ and fully optimized for ESLint 9's flat config system
+- Compatible with ESLint 8.57.0+, 9.x, and 10.x (flat config)
 - Provides auto-fix capability to automatically sort properties
 - Handles multiple vanilla-extract APIs (style, styleVariants, recipe, globalStyle, etc.)
 - Handles complex cases like nested objects, arrays of styles, and pseudo selectors
@@ -38,12 +38,16 @@ Comprehensive ESLint plugin for vanilla-extract that enforces best practices in 
 
 ## Requirements
 
-- ESLint 8.57.0 or higher
-- Node.js 18.18.0 or higher
+- ESLint 8.57.0 or higher (8.57, 9.x, and 10.x are all supported and CI-tested)
+- Node.js 20.19.0 or higher
 - ESM (ECMAScript Modules) only
 - Flat config system using either:
   - `eslint.config.mjs` (recommended, always works with ESM plugins)
   - `eslint.config.js` (only if your package.json has `"type": "module"`)
+
+> **Note for ESLint 10 users:** if you also use `typescript-eslint`, make sure you're on
+> `typescript-eslint` >= 8.46 (first release declaring ESLint 10 support) to avoid
+> peer-dependency conflicts.
 
 ## Installation
 

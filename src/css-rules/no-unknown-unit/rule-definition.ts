@@ -6,7 +6,6 @@ const noUnknownUnitRule: Rule.RuleModule = {
     type: 'problem',
     docs: {
       description: 'disallow invalid or unknown CSS units in vanilla-extract style objects',
-      category: 'Possible Errors',
       recommended: true,
     },
     schema: [],

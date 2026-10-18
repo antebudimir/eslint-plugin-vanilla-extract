@@ -6,7 +6,6 @@ const concentricOrderRule: Rule.RuleModule = {
     type: 'suggestion',
     docs: {
       description: 'enforce concentric CSS property ordering in vanilla-extract styles',
-      category: 'Stylistic Issues',
       recommended: true,
       url: 'https://rhodesmill.org/brandon/2011/concentric-css/',
     },

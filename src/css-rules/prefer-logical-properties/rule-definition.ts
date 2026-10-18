@@ -6,7 +6,6 @@ const preferLogicalPropertiesRule: Rule.RuleModule = {
     type: 'suggestion',
     docs: {
       description: 'enforce logical CSS properties over physical directional properties in vanilla-extract',
-      category: 'Best Practices',
       recommended: false,
     },
     fixable: 'code',

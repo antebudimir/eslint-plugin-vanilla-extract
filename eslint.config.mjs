@@ -1,5 +1,5 @@
 import eslintPluginESLintPlugin from 'eslint-plugin-eslint-plugin';
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 import { defineConfig } from 'eslint/config';
 import prettierConfig from 'eslint-config-prettier';
 import * as tseslint from 'typescript-eslint';
@@ -9,13 +9,13 @@ export default defineConfig([
     files: ['**/*.js', '**/*.ts', '**/*.cjs', '**/*.mjs'],
     plugins: {
       'eslint-plugin': eslintPluginESLintPlugin,
-      import: importPlugin,
+      'import-x': importPlugin,
     },
     settings: {
-      'import/parsers': {
+      'import-x/parsers': {
         '@typescript-eslint/parser': ['.ts'],
       },
-      'import/resolver': {
+      'import-x/resolver': {
         typescript: {
           alwaysTryTypes: true,
           project: './tsconfig.json',
@@ -31,7 +31,7 @@ export default defineConfig([
       'eslint-plugin/require-meta-type': 'error',
       'eslint-plugin/require-meta-docs-description': 'error',
       'eslint-plugin/consistent-output': 'error',
-      'import/order': [
+      'import-x/order': [
         'error',
         {
           groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'type'],
@@ -55,11 +55,11 @@ export default defineConfig([
           },
         },
       ],
-      'import/no-unresolved': 'error',
-      'import/named': 'error',
-      'import/namespace': 'error',
-      'import/default': 'error',
-      'import/export': 'error',
+      'import-x/no-unresolved': 'error',
+      'import-x/named': 'error',
+      'import-x/namespace': 'error',
+      'import-x/default': 'error',
+      'import-x/export': 'error',
     },
   },
 

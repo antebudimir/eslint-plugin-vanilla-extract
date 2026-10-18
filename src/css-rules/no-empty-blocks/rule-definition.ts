@@ -6,7 +6,6 @@ const noEmptyStyleBlocksRule: Rule.RuleModule = {
     type: 'suggestion',
     docs: {
       description: 'disallow empty style blocks in vanilla-extract stylesheets',
-      category: 'Best Practices',
       recommended: true,
     },
     fixable: 'code',

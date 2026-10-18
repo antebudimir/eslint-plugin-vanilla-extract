@@ -8,7 +8,11 @@ import type { TSESTree } from '@typescript-eslint/utils';
  * @param fixer The ESLint fixer.
  * @returns The fix object.
  */
-export const removeNodeWithComma = (ruleContext: Rule.RuleContext, node: TSESTree.Node, fixer: Rule.RuleFixer) => {
+export const removeNodeWithComma = (
+  ruleContext: Rule.RuleContext,
+  node: TSESTree.Node,
+  fixer: Rule.RuleFixer,
+): Rule.Fix => {
   const sourceCode = ruleContext.sourceCode;
   const tokenAfter = sourceCode.getTokenAfter(node as Rule.Node);
   if (tokenAfter && tokenAfter.value === ',' && node.range && tokenAfter.range) {

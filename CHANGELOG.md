@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-11-01
+
+- Add ESLint 10 support (tested against 10.x via the full test suite, typecheck against v10 rule
+  typings, a new CLI integration test, and an 8.57 / 9 / 10 compatibility matrix in CI)
+  - Raise minimum Node.js engine to 20.19.0 (required by ESLint 10)
+
 ## [1.18.1] - 2026-10-17
 
 - Fix CSS order autofix leaving comments behind when reordering properties ([issue #14](https://github.com/antebudimir/eslint-plugin-vanilla-extract/issues/14))

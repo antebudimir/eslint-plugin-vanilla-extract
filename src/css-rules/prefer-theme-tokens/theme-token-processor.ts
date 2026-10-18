@@ -408,7 +408,13 @@ export const processThemeTokensInStyleObject = (
     // Check if property value is a TemplateLiteral (e.g., `${rem(4)} ${rem(8)}`)
     if (checkHelperFunctions && property.value.type === AST_NODE_TYPES.TemplateLiteral) {
       // Get the source code of the template literal
-      const sourceCode = context.sourceCode || context.getSourceCode();
+      // getSourceCode() removed in ESLint v10
+      const sourceCode =
+        context.sourceCode ||
+        (context as { getSourceCode?: () => typeof context.sourceCode }).getSourceCode?.();
+      if (!sourceCode) {
+        return;
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const templateText = sourceCode.getText(property.value as any);
 
@@ -488,7 +494,13 @@ export const processThemeTokensInStyleObject = (
     // Check if property value is a CallExpression (e.g., rem(48), clsx(...))
     if (checkHelperFunctions && property.value.type === AST_NODE_TYPES.CallExpression) {
       // Get the source code of the call expression
-      const sourceCode = context.sourceCode || context.getSourceCode();
+      // getSourceCode() removed in ESLint v10
+      const sourceCode =
+        context.sourceCode ||
+        (context as { getSourceCode?: () => typeof context.sourceCode }).getSourceCode?.();
+      if (!sourceCode) {
+        return;
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const callExpressionText = sourceCode.getText(property.value as any);
 
