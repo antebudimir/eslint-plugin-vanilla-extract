@@ -130,7 +130,13 @@ const createPropertyKeyFix = (
 
   if (key.type === AST_NODE_TYPES.Literal && typeof key.value === 'string') {
     // Preserve quote style
-    const sourceCode = context.getSourceCode();
+    // `context.sourceCode` on ESLint v9+/v10+; `getSourceCode()` is the ESLint v8 fallback
+    const sourceCode =
+      context.sourceCode ||
+      (context as { getSourceCode?: () => typeof context.sourceCode }).getSourceCode?.();
+    if (!sourceCode) {
+      return null;
+    }
     const originalText = sourceCode.getText(key as unknown as Rule.Node);
     const quote = originalText[0];
     return fixer.replaceText(key as unknown as Rule.Node, `${quote}${newPropertyName}${quote}`);
