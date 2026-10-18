@@ -50,6 +50,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:integration": "bash scripts/integration-test.sh",
+
     "typecheck": "tsc --noEmit",
     "version:update": "node scripts/update-version.mjs"
   },
