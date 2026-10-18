@@ -328,6 +328,8 @@ export const concentricGroups: { [key: string]: string[] } = {
   counters: ['counter-reset', 'counter-increment', 'counter-set'],
 
   breaks: ['page-break-before', 'page-break-after', 'page-break-inside', 'break-before', 'break-after', 'break-inside'],
+  vars: ['vars'],
+  selectors: ['selectors'],
 };
 
 /**
