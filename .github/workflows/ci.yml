@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  NODE_VERSION: '20.18.3'
+  NODE_VERSION: '20.19.0'
   PNPM_VERSION: '10.5.0'
   COVERAGE_REPORT_PATH: './coverage/vitest-reports/lcov.info'
 
@@ -135,3 +135,52 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ${{ env.COVERAGE_REPORT_PATH }}
+
+  compat:
+    name: Compat (ESLint ${{ matrix.eslint }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        eslint: ['8.57.1', '9', '10']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build package
+        run: pnpm build
+
+      # ESLint 9/10: run the full test suite (eslint-vitest-rule-tester supports v9+)
+      - name: Run full test suite
+        if: matrix.eslint != '8.57.1'
+        run: |
+          pnpm add -D eslint@${{ matrix.eslint }}
+          pnpm test
+
+      # Real-CLI end-to-end check (plugin as a user would consume it)
+      - name: Run integration test
+        if: matrix.eslint == '10'
+        run: pnpm test:integration
+
+      # ESLint 8: the test runner only supports v9+, so verify via Linter API smoke test
+      - name: Run ESLint 8 smoke test
+        if: matrix.eslint == '8.57.1'
+        run: |
+          mkdir -p /tmp/v8check
+          cd /tmp/v8check
+          npm init -y
+          npm i eslint@8.57.1
+          PLUGIN_DIST=${{ github.workspace }}/dist/index.js node ${{ github.workspace }}/scripts/smoke-eslint8.mjs
